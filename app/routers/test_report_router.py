@@ -6,8 +6,7 @@
 """
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
-from app.db.database import  engine
-# from app.schemas import test_report_schemas
+from app.db.database import engine
 from app.models.test_report_model import *
 from app.utils import response_code
 
