@@ -6,7 +6,6 @@
 """
 
 from pydantic import BaseModel
-# from typing import Optional
 
 
 # bug等级数量分布

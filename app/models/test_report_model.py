@@ -11,7 +11,7 @@ from datetime import datetime
 from app.schemas import test_report_schemas
 
 
-class TestReportModels(Base):
+class TestReportModel(Base):
 	__tablename__ = "zt_testreport"
 
 	id = Column(Integer, autoincrement=True, primary_key=True, index=True)  # index=True表示是否创建索引
@@ -63,11 +63,11 @@ class TestReportModels(Base):
 
 # 根据id查询
 def get(report_id: int):
-	return Session.query(TestReportModels).filter(TestReportModels.id == report_id).all()
+	return Session.query(TestReportModel).filter(TestReportModel.id == report_id).all()
 
 
 def get_by_id(report_id: int):
-	return Session.query(TestReportModels).filter(TestReportModels.id == report_id).first()
+	return Session.query(TestReportModel).filter(TestReportModel.id == report_id).first()
 
 
 # 新增数据

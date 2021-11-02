@@ -18,13 +18,11 @@ router = APIRouter(prefix="/ewordci/testreport", tags=["testreport"])  # 路由�
 
 @router.get("/get", name="获取测试报告信息")
 async def get_test_report(report_id: int):
-	report_list = get(report_id)
-	res_list = []
-	if report_list:
-		for report_dict in report_list:
-			res_list.append(report_dict.to_dict())
-
-		return response_code.resp_200(report_list)
+	test_report = get_by_id(report_id)
+	if test_report:
+		# 为了统一返回格式，转换成list
+		res_list = [test_report.to_dict()]
+		return response_code.resp_200(res_list)
 	else:
 		return response_code.resp_404(message="找不到id={}的测试报告".format(report_id))
 
@@ -32,7 +30,7 @@ async def get_test_report(report_id: int):
 @router.post("/create", response_model=test_report_schemas.TestReport, name="创建测试报告")
 async def test_report_create(report: test_report_schemas.TestReport):
 	report_json = jsonable_encoder(report)  # 将入参json格式化
-	db_test_report = TestReportModels(report_json)  # 入参传入数据模型
+	db_test_report = TestReportModel(report_json)  # 入参传入数据模型
 	create(db_test_report)  # 调用新增数据库方法
 	if db_test_report.id:  # 根据有没有生成新的id判断是否插入成功
 		return response_code.resp_200(db_test_report.to_dict())
