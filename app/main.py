@@ -7,7 +7,8 @@
 from fastapi import FastAPI
 from routers import (test_report_router,
 					 bug_related_evaluations_router,
-					 test_task_router)
+					 test_task_router,
+					 business_auto_create_report)
 from starlette.responses import RedirectResponse
 import uvicorn
 
@@ -17,6 +18,7 @@ app = FastAPI()
 app.include_router(test_report_router.router)
 app.include_router(bug_related_evaluations_router.router)
 app.include_router(test_task_router.router)
+app.include_router(business_auto_create_report.router)
 
 
 @app.get("/")

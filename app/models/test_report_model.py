@@ -34,28 +34,26 @@ class TestReportModel(Base):
 	createdDate = Column(DateTime, default=datetime.now())
 	deleted = Column(Enum('1', '0'), default='0')
 
-	# deleted = Column(Boolean, default=False)
-
 	def __init__(self, fields_dict: dict):
-		self.id = fields_dict['id']
-		self.product = fields_dict['product']
-		self.project = fields_dict['project']
-		self.tasks = fields_dict['tasks']
-		self.builds = fields_dict['builds']
-		self.title = fields_dict['title']
-		self.begin = fields_dict['begin']
-		self.end = fields_dict['end']
-		self.owner = fields_dict['owner']
-		self.members = fields_dict['members']
-		self.stories = fields_dict['stories']
-		self.bugs = fields_dict['bugs']
-		self.cases = fields_dict['cases']
-		self.report = fields_dict['report']
-		self.objectType = fields_dict['objectType']
-		self.objectID = fields_dict['objectID']
-		self.createdBy = fields_dict['createdBy']
-		self.createdDate = fields_dict['createdDate']
-		self.deleted = fields_dict['deleted']
+		self.id = fields_dict.get('id')
+		self.product = fields_dict.get('product')
+		self.project = fields_dict.get('project')
+		self.tasks = fields_dict.get('tasks')
+		self.builds = fields_dict.get('builds')
+		self.title = fields_dict.get('title')
+		self.begin = fields_dict.get('begin')
+		self.end = fields_dict.get('end')
+		self.owner = fields_dict.get('owner')
+		self.members = fields_dict.get('members')
+		self.stories = fields_dict.get('stories')
+		self.bugs = fields_dict.get('bugs')
+		self.cases = fields_dict.get('cases')
+		self.report = fields_dict.get('report')
+		self.objectType = fields_dict.get('objectType')
+		self.objectID = fields_dict.get('objectID')
+		self.createdBy = fields_dict.get('createdBy')
+		self.createdDate = fields_dict.get('createdDate')
+		self.deleted = fields_dict.get('deleted')
 
 	def to_dict(self):  # 用将数据列转换成dict
 		return {column.name: getattr(self, column.name) for column in self.__table__.columns}

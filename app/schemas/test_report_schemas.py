@@ -8,6 +8,8 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from datetime import date
+from typing import Union
 
 
 # 常用的用于数据接口schema定义与检查的库
@@ -24,8 +26,10 @@ class TestReport(BaseModel):
 	tasks: str
 	builds: str
 	title: str
-	begin: str
-	end: str
+	# begin: str
+	begin: Union[str, date]  # 同时支持str,date类型
+	end: Union[str, date]
+	# end: str
 	owner: str
 	members: str
 	stories: str
@@ -45,4 +49,7 @@ class TestReportUpdate(TestReport):
 
 
 if __name__ == "__main__":
-	pass
+	from app.routers.business_auto_create_report import generate_report
+
+	r = TestReport(**generate_report(648))
+	print(r.json())
