@@ -40,6 +40,10 @@ class BugModel(Base):
 """bug的CRUD"""
 
 
+def get_by_id(bug_id):
+	return Session.query(BugModel).filter(BugModel.id == bug_id).first()
+
+
 # 根据测试单号获取关联的bug的id，用,隔开
 def get_testtask_related_bug(task_id):
 	cur_res = Session.execute(
@@ -49,17 +53,43 @@ def get_testtask_related_bug(task_id):
 	return ','.join(id_list)
 
 
-def get_by_id(bug_id):
-	return Session.query(BugModel).filter(BugModel.id == bug_id).first()
+# 根据测试单号获取bug的严重程度统计，以dict的方式返回
+def get_testtask_bug_statistics(task_id):
+	"""
+	:param task_id: 测试单号
+	:return: 返回bug等级统计的键值对
+	"""
+	sql_statement = """SELECT severity,count(1) 
+FROM zt_bug AS zb INNER JOIN (SELECT id FROM zt_bug WHERE openedBuild IN (SELECT build FROM zt_testtask WHERE id = {})) AS b 
+ON zb.id=b.id 
+GROUP BY severity""".format(task_id)
+	cur_res = Session.execute(sql_statement)
+	res_list = cur_res.all()
+	return dict(res_list)
 
 
 """bug相关的评估函数"""
 
 
 # 不稳定系数（instability）IN值计算
-def calculate_in_value(severity: dict[str:int]):
-	# fatal: int, severe: int, mistake: int, suggest: int
-	return severity['fatal'] * 30 + severity['severe'] * 15 + severity['mistake'] * 5 + severity['suggest'] * 1
+def calculate_in_value(severity: dict[int:int]):
+	"""
+	:param severity: 键值对的方式  等级：数量
+	# fatal: 1, severe: 2, mistake: 3, suggest: 4
+	:return: 返回IN值整型
+	"""
+	in_value = 0
+	if severity.get(1):
+		in_value += severity.get(1) * 30
+	if severity.get(2):
+		in_value += severity.get(2) * 15
+	if severity.get(3):
+		in_value += severity.get(3) * 5
+	if severity.get(4):
+		in_value += severity.get(4) * 1
+	return in_value
+
+# return severity.get('1') * 30 + severity.get('2') * 15 + severity.get('3') * 5 + severity.get('4') * 1
 
 
 # 提测质量评估，根据in值计算
@@ -74,7 +104,7 @@ def evaluate_grade(in_value: int):
 		return '优秀'
 
 
-# 版本发布评估
+# 版本发布评估，根据in值计算
 def release_evaluation(in_value: int):
 	if in_value < 15:
 		return '允许发布'
@@ -84,9 +114,9 @@ def release_evaluation(in_value: int):
 
 if __name__ == "__main__":
 	# bug_num = {'fatal': 0, 'severe': 1, 'mistake': 2, 'suggest': 3}
-	# ins_value = calculate_in_value(bug_num)
-	# print(ins_value)
-	# print(evaluate_grade(ins_value))
-	# print(release_evaluation(ins_value))
-
-	print(get_testtask_related_bug(658))
+	ins_value = calculate_in_value(get_testtask_bug_statistics(658))
+	print(ins_value)
+# print(evaluate_grade(ins_value))
+# print(release_evaluation(ins_value))
+# print(get_testtask_related_bug(658))
+# print(get_testtask_bug_statistics(658))

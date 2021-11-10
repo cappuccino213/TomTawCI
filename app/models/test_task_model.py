@@ -54,5 +54,16 @@ def remove():
 	pass
 
 
+"""与测试单相关的函数"""
+
+
+# 通过测试单号获取版本详情
+def get_build_details(task_id):
+	cur_res = Session.execute(
+		'SELECT * FROM zt_build WHERE id in (SELECT build FROM zt_testtask WHERE id = :id)', {'id': task_id})
+	res_list = cur_res.first()
+	return res_list._mapping   # 返回字典项
+
 if __name__ == "__main__":
-	print(get_by_id(245).to_dict().get('status'))
+	# print(get_by_id(245).to_dict().get('status'))
+	print(get_build_details(643))

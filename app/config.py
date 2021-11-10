@@ -9,9 +9,12 @@
 # SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:123456@192.168.1.16:3306/zentao"
 SQLALCHEMY_DATABASE_URL = "mysql+pymysql://test:123456@192.168.1.43:3306/zentao"
 
-
 """禅道API地址"""
-ZENTAO_URL = "http://192.168.1.43:8089"
+ZENTAO_URL = "http://192.168.1.43:8089"  # 暂时用不到
+
+"""业务参数"""
+# 报告模板
+TEST_REPORT_TEMPLATE = 'reportSummary.html'
 
 if __name__ == "__main__":
 	pass
