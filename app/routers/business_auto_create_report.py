@@ -9,12 +9,12 @@
 import os
 from fastapi import APIRouter
 from app.models.test_task_model import get_by_id, get_build_details
-from app.models.test_report_model import TestReportModel, create
+from app.models.test_report_model import TestReportModel
+from app.db.database import *
 from app.models.bug_model import get_testtask_related_bug, get_testtask_bug_statistics, calculate_in_value, \
 	evaluate_grade, release_evaluation
 from app.schemas import test_report_schemas
 from app.utils import response_code, generate_report_summary_html
-from app.config import TEST_REPORT_TEMPLATE
 
 REPORT_TEMPLATE_PATH = r'D:\Python\Project\pythonProject\TomTawCI\app\static\reportSummary.html'
 # REPORT_TEMPLATE_PATH = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), 'static', TEST_REPORT_TEMPLATE)
@@ -62,6 +62,7 @@ def generate_report(task_id):
 		report_dict['objectID'] = task['id']
 		report_dict['createdBy'] = task['owner']
 	else:
+		print('测试单{}未完成，不能生成测试报告'.format(task['id']))
 		report_dict = dict()
 	return report_dict
 

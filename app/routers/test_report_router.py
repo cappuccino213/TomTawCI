@@ -6,9 +6,12 @@
 """
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
-from app.db.database import engine
-from app.models.test_report_model import *
+# from app.db.database import engine
+# from app.models.test_report_model import *
+from app.models.test_report_model import TestReportModel
 from app.utils import response_code
+from app.db.database import *
+from app.schemas import test_report_schemas
 
 Base.metadata.create_all(bind=engine)
 
@@ -18,11 +21,9 @@ router = APIRouter(prefix="/ewordci/testreport", tags=["testreport"])  # 路由�
 
 @router.get("/get", name="获取测试报告信息")
 async def get_test_report(report_id: int):
-	test_report = get_by_id(report_id)
+	test_report = get_list(report_id, TestReportModel)
 	if test_report:
-		# 为了统一返回格式，转换成list
-		res_list = [test_report.to_dict()]
-		return response_code.resp_200(res_list)
+		return response_code.resp_200(test_report)
 	else:
 		return response_code.resp_404(message="找不到id={}的测试报告".format(report_id))
 
@@ -40,7 +41,7 @@ async def test_report_create(report: test_report_schemas.TestReport):
 
 @router.put("/update", response_model=test_report_schemas.TestReport, name="修改测试报告")
 async def test_report_update(report: test_report_schemas.TestReport):
-	if_success = update(report)
+	if_success = update(report, TestReportModel)
 	if if_success:
 		return response_code.resp_200(report.dict(), massage="修改测试报告成功")
 	else:
@@ -49,7 +50,7 @@ async def test_report_update(report: test_report_schemas.TestReport):
 
 @router.delete("/delete", name="删除测试报告")
 async def test_report_del(report_id: int):
-	if_success = remove(report_id)
+	if_success = remove(report_id,TestReportModel)
 	if if_success:
 		return response_code.resp_200([if_success.to_dict()], massage="删除测试报告成功")
 	else:

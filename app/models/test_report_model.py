@@ -59,6 +59,7 @@ class TestReportModel(Base):
 		return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
+"""
 # 根据id查询
 def get(report_id: int):
 	return Session.query(TestReportModel).filter(TestReportModel.id == report_id).all()
@@ -112,9 +113,11 @@ def remove(report_id: int):
 			print(str(e))
 			Session.rollback()
 			Session.flush()
-
+"""
 
 if __name__ == "__main__":
 	# print(get_by_id(325)['deleted'])
 	# t = test_report_schemas.TestReportDel(id=556, deleted="1")
-	remove(555)
+	from app.db.database import remove
+
+	remove(555, TestReportModel)
