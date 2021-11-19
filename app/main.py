@@ -6,6 +6,7 @@
 """
 from fastapi import FastAPI
 from routers import (test_report_router,
+					 build_router,
 					 bug_related_evaluations_router,
 					 test_task_router,
 					 business_auto_create_report)
@@ -14,10 +15,14 @@ import uvicorn
 
 app = FastAPI()
 
-# 注册路由
-app.include_router(test_report_router.router)
-app.include_router(bug_related_evaluations_router.router)
+"""注册路由"""
+# 基础
+app.include_router(build_router.router)
 app.include_router(test_task_router.router)
+app.include_router(test_report_router.router)
+
+# 业务
+app.include_router(bug_related_evaluations_router.router)
 app.include_router(business_auto_create_report.router)
 
 
