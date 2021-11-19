@@ -19,5 +19,84 @@ Session = SessionLocal()
 # Base是用来给model类继承的
 Base = declarative_base()
 
+
+
+# 查询
+def get_list(primary_id: int, models: Base):
+	"""
+	根据表的主键id查询
+	:param primary_id: 主键id
+	:param models: 继承Base的对象
+	:return: 返回类型是list
+	"""
+	return Session.query(models).filter(models.id == primary_id).all()
+
+
+def get(primary_id: int, models: Base):
+	"""
+	根据表的主键id查询
+	:param primary_id: 主键id
+	:param models: 继承Base的对象
+	:return:
+	"""
+	return Session.query(models).filter(models.id == primary_id).first()
+
+
+# 新增
+def create(schema):
+	"""
+	:param schema: schemas定义的类
+	:return:
+	"""
+	try:
+		Session.add(schema)
+		Session.commit()
+		Session.refresh(schema)
+	except Exception as e:
+		print(str(e))
+		Session.rollback()
+		Session.flush()
+
+
+# 更新
+def update(schema, models: Base):
+	"""
+	先用入参json中的id查找记录，然后修改信息
+	:param schema:
+	:param models:
+	:return:
+	"""
+	update_column = get(schema.id, models)
+	if update_column:  # 判断被修改的数据是否存在
+		update_dict = schema.dict()  # 将查询到的列记录转成dict类型
+		try:  # 使用遍历k,v方式给对应赋值
+			for k, v in update_dict.items():
+				setattr(update_column, k, v)  # setattr给对象的属性赋值 https://www.runoob.com/python/python-func-setattr.html
+			Session.commit()  # 提交修改
+			Session.flush()
+			Session.refresh(update_column)
+			return update_column
+		except Exception as e:
+			print(str(e))
+			Session.rollback()
+			Session.flush()
+
+
+# 删除
+def remove(primary_id, models: Base):
+	remove_column = get(primary_id, models)
+	if remove_column:
+		try:
+			setattr(remove_column, 'deleted', '1')
+			Session.commit()
+			Session.flush()
+			Session.refresh(remove_column)
+			return remove_column
+		except Exception as e:
+			print(str(e))
+			Session.rollback()
+			Session.flush()
+
+
 if __name__ == "__main__":
 	pass
