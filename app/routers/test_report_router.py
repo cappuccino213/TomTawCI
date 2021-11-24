@@ -6,8 +6,6 @@
 """
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
-# from app.db.database import engine
-# from app.models.test_report_model import *
 from app.models.test_report_model import TestReportModel
 from app.utils import response_code
 from app.db.database import *
@@ -43,16 +41,16 @@ async def test_report_create(report: test_report_schemas.TestReport):
 async def test_report_update(report: test_report_schemas.TestReport):
 	if_success = update(report, TestReportModel)
 	if if_success:
-		return response_code.resp_200(report.dict(), massage="修改测试报告成功")
+		return response_code.resp_200(report.dict(), message="修改测试报告成功")
 	else:
 		return response_code.resp_404(message="修改id={}的测试报告失败".format(report.id))
 
 
 @router.delete("/delete", name="删除测试报告")
 async def test_report_del(report_id: int):
-	if_success = remove(report_id,TestReportModel)
+	if_success = remove(report_id, TestReportModel)
 	if if_success:
-		return response_code.resp_200([if_success.to_dict()], massage="删除测试报告成功")
+		return response_code.resp_200([if_success.to_dict()], message="删除测试报告成功")
 	else:
 		return response_code.resp_404(message="删除id={}的测试报告失败".format(report_id))
 

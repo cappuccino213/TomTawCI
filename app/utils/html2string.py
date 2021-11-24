@@ -1,5 +1,5 @@
 """
-@File : generate_report_summary_html.py
+@File : html2string.py
 @Date : 2021/11/3 16:48
 @Author: 九层风（YePing Zhang）
 @Contact : yeahcheung213@163.com
@@ -37,6 +37,7 @@ def html_content(html_file):
 """
 
 
+# 测试报告模板
 def report_html2string(html_file, summary: dict):
 	with open(html_file, 'r', encoding="utf-8") as f:
 		# 将值填入报告的变量值，使用get方法取字典值，防止取不到值的抛异常
@@ -50,12 +51,18 @@ def report_html2string(html_file, summary: dict):
 	return html_str
 
 
-# return html_str
+def task_html2string(html_file, desc: dict):
+	with open(html_file, 'r', encoding="utf-8") as f:
+		html_str = f.read().format(ifSmoke=desc.get('ifSmoke'), manTime=desc.get('manTime'),
+								   testType=desc.get('testType'),
+								   testSuggest=desc.get('testSuggest'))
+
+	return html_str
 
 
 if __name__ == "__main__":
 	hf = r'D:\Python\Project\pythonProject\TomTawCI\app\static\reportSummary.html'
 	s = dict(testTime="1MD", testURL="http://192.168.1.18:8141",
-				   testClient="Win10Pro Core(TM) i5-7500 CPU 16G RAM",
-				   testTools="DevTools")
+			 testClient="Win10Pro Core(TM) i5-7500 CPU 16G RAM",
+			 testTools="DevTools")
 	report_html2string(hf, s)

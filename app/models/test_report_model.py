@@ -6,9 +6,9 @@
 """
 from sqlalchemy import Column, Integer, Date, DateTime, Enum, String, Text
 from app.db.database import Base
-from app.db.database import Session
+# from app.db.database import Session
 from datetime import datetime
-from app.schemas import test_report_schemas
+# from app.schemas import test_report_schemas
 
 
 class TestReportModel(Base):

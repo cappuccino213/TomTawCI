@@ -6,18 +6,17 @@
 """
 
 # 根据测试单号自动生成报告
-import os
+# import os
 from fastapi import APIRouter
-from app.models.test_task_model import get_by_id, get_build_details
+from app.models.test_task_model import TestTaskModel, get_build_details
 from app.models.test_report_model import TestReportModel
 from app.db.database import *
 from app.models.bug_model import get_testtask_related_bug, get_testtask_bug_statistics, calculate_in_value, \
 	evaluate_grade, release_evaluation
 from app.schemas import test_report_schemas
-from app.utils import response_code, generate_report_summary_html
+from app.utils import response_code, html2string
 
 REPORT_TEMPLATE_PATH = r'D:\Python\Project\pythonProject\TomTawCI\app\static\reportSummary.html'
-# REPORT_TEMPLATE_PATH = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), 'static', TEST_REPORT_TEMPLATE)
 
 
 # 生成报告总结
@@ -40,7 +39,7 @@ def report_summary(task_id):
 
 def generate_report(task_id):
 	"""根据测试单的状态判断能否生成"""
-	task = get_by_id(task_id).to_dict()
+	task = get(task_id, TestTaskModel).to_dict()
 	if task.get('status') == 'done':
 		report_dict = dict()
 		report_dict['product'] = task['product']
@@ -51,9 +50,8 @@ def generate_report(task_id):
 		report_dict['end'] = task['end']
 		report_dict['members'] = task['mailto']
 		report_dict['title'] = '{0} TESTTASK#{1} {2} 测试报告'.format(task['end'], task['id'], task['name'])
-		# report_dict['report'] = report_summary(task_id)
-		report_dict['report'] = generate_report_summary_html.report_html2string(REPORT_TEMPLATE_PATH,
-																				report_summary(task_id))
+		report_dict['report'] = html2string.report_html2string(REPORT_TEMPLATE_PATH,
+															   report_summary(task_id))
 		report_dict['bugs'] = get_testtask_related_bug(task_id)
 		report_dict['cases'] = ''
 		report_dict['stories'] = ''
@@ -77,13 +75,11 @@ async def generate_test_report(task_id: int):
 	db_test_report = TestReportModel(report_schemas.dict())  # 实例化数据模型
 	create(db_test_report)  # 调用create插入数据库
 	if db_test_report.id:  # 根据有没有生成新的id判断是否插入成功
-		return response_code.resp_200(db_test_report.to_dict(), massage='测试单{}的测试报告生成成功'.format(task_id))
+		return response_code.resp_200(db_test_report.to_dict(), message='测试单{}的测试报告生成成功'.format(task_id))
 	else:
 		return response_code.resp_400(message="生成报告失败")
 
 
 if __name__ == "__main__":
-	print(REPORT_TEMPLATE_PATH)
-# print(generate_report(658))
-# print(report_summary(658))
-# print(report_summary(658))
+	# print(REPORT_TEMPLATE_PATH)
+	print(generate_report(633))

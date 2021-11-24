@@ -7,7 +7,7 @@
 from app.db.database import *
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
-from app.models.build_model import BuildModel
+from app.models.build_model import *
 from app.utils import response_code
 from app.schemas import build_schemas
 
@@ -34,6 +34,15 @@ async def build_create(build: build_schemas.Build):
 		return response_code.resp_200(build_db.to_dict())
 	else:
 		return response_code.resp_400(message="创建版本失败")
+
+
+@router.get("/get-last-build", name="上一个版本号")
+async def get_last_build(project_id: int):
+	build_info = query_by_project(project_id)
+	if build_info:
+		return response_code.resp_200([build_info])
+	else:
+		return response_code.resp_404(message="找不到id={}的版本信息".format(project_id))
 
 
 if __name__ == "__main__":

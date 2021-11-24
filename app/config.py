@@ -6,8 +6,8 @@
 """
 
 """数据库配置"""
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:123456@192.168.1.16:3306/zentao"
-# SQLALCHEMY_DATABASE_URL = "mysql+pymysql://test:123456@192.168.1.43:3306/zentao"
+# SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:123456@192.168.1.16:3306/zentao"
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://test:123456@192.168.1.43:3306/zentao"
 
 
 """CI相关配置"""

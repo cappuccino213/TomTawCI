@@ -7,7 +7,7 @@
 from app.db.database import Base
 from sqlalchemy import Column, String, Integer, Date, Enum, Text
 from app.db.database import Session
-from app.schemas import test_task_schemas
+from datetime import date
 
 
 class TestTaskModel(Base):
@@ -19,16 +19,16 @@ class TestTaskModel(Base):
 	project = Column(Integer)
 	build = Column(String(30))
 	owner = Column(String(30))
-	pri = Column(Integer)
-	begin = Column(Date)
-	end = Column(Date)
+	pri = Column(Integer, default=2)
+	begin = Column(Date, default=date.today())
+	end = Column(Date, default=date.today())
 	mailto = Column(Text)
 	desc = Column(Text)
 	report = Column(Text, default='CI')  # 数据库中为非空字段给个默认值
 	auto = Column(String(10), default='no')
 	subStatus = Column(String(30), default='NA')
-	status = Column(Enum('blocked', 'doing', 'wait', 'done'))
-	deleted = Column(Enum('0', '1'))
+	status = Column(Enum('blocked', 'doing', 'wait', 'done'),default='wait')
+	deleted = Column(Enum('0', '1'), default='0')
 
 	def __init__(self, fields_dict: dict):
 		self.id = fields_dict.get('id')

@@ -24,7 +24,7 @@ async def get_test_task(task_id: int):
 		res_list = [test_task.to_dict()]
 		return response_code.resp_200(res_list)
 	else:
-		return response_code.resp_404(message="找不到id={}的测试报告".format(task_id))
+		return response_code.resp_404(message="找不到id={}的测试单".format(task_id))
 
 
 @router.post("/create", response_model=test_task_schemas.TestTask, name="创建测试单")

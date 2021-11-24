@@ -7,7 +7,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from ..config import *
+from app.config import *
 
 # 创建SQLAlchemy的engine
 engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True, pool_pre_ping=True)
@@ -18,7 +18,6 @@ Session = SessionLocal()
 
 # Base是用来给model类继承的
 Base = declarative_base()
-
 
 
 # 查询
@@ -98,5 +97,28 @@ def remove(primary_id, models: Base):
 			Session.flush()
 
 
+# 执行sql语句,返回list[dict]
+def execute_sql(statement):
+	cur_res = Session.execute(statement)
+	res_list = cur_res.all()
+	# return res_list  # 返回字典项
+	return [(res._mapping) for res in res_list]  # 返回字典项
+
+
 if __name__ == "__main__":
-	pass
+	sql = """SELECT
+	product AS product_id,
+	pd.`name` AS product_name,
+	project AS project_id,
+	pj.`name` AS project_name 
+FROM
+	zt_projectproduct pp
+	LEFT JOIN zt_product pd ON pp.product = pd.id
+	LEFT JOIN zt_project pj ON pp.project = pj.id 
+WHERE
+	pd.deleted = '0' 
+	AND pj.deleted = '0'"""
+
+	# res_list = execute_sql(sql)
+	# [print(i._mapping) for i in res_list]
+	print(execute_sql(sql))
