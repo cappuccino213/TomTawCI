@@ -18,6 +18,7 @@ class Deliver(BaseModel):
 	desc: str
 	scmPath: Optional[str]
 	filePath: Optional[str]
+	build_date: Optional[str]  # 版本日期
 	# 测试单相关
 	project_id: int
 	project_name: str
@@ -27,6 +28,8 @@ class Deliver(BaseModel):
 	mailto: str
 	test_type: str
 	test_suggest: str
+	begin: Optional[str]
+	end: Optional[str]
 
 	class Config:
 		schema_extra = {
@@ -43,10 +46,13 @@ class Deliver(BaseModel):
 				"desc": "版本信息描述",
 				"scmPath": r"\\192.168.1.19\delivery\eWordRIS\V2.2.0.4286.20211117（源码路径，可选）",
 				"filePath": r"\\192.168.1.19\delivery\eWordRIS\V2.2.0.4286.20211117（文件路径，可选）",
+				"build_date": "2021-11-18(不传默认为当天)",
 				"owner": "zyp",
 				"mailto": ",zyp,zhangl(多个用户用,隔开，首个字符也是,)",
 				"test_type": "功能/接口/BUG回归等",
-				"test_suggest": "测试建议(1、参考文档2、注意事项3、测试着重点 等其他说明)"
+				"test_suggest": "测试建议(1、参考文档2、注意事项3、测试着重点 等其他说明)",
+				"begin": "2021-11-18（一定要传值，不然默认为当天）",
+				"end": "2021-11-18（一定要传值，不然默认为当天）"
 			}
 		}
 

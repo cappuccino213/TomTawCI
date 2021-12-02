@@ -19,8 +19,8 @@ class BuildModel(Base):
 	branch = Column(Integer, default=0)
 	product = Column(Integer)
 	project = Column(Integer)
-	scmPath = Column(String(255))
-	filePath = Column(String(255))
+	scmPath = Column(String(255), default='')
+	filePath = Column(String(255), default='')
 	date = Column(Date, default=date.today())
 	stories = Column(Text, default='')
 	bugs = Column(Text, default='')
@@ -47,10 +47,10 @@ class BuildModel(Base):
 		return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
-# 根据项目ID获取最新的版本号
+# 筛选出各项目中最新的版本号
 def query_by_project(project_id: int):
 	return Session.query(BuildModel).filter(BuildModel.project == project_id, BuildModel.deleted == '0').order_by(
-		desc(BuildModel.date)).first()
+		desc(BuildModel.id)).first()
 
 
 # 多条件查询版本信息

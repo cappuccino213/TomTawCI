@@ -20,7 +20,7 @@ class TestTask(BaseModel):
 	begin: Union[str, date] = date.today()  # 可选类型
 	end: Union[str, date] = date.today()
 	mailto: Optional[str]
-	desc: Optional[str] = ''  # TODO 这里之后要用html模板
+	desc: Optional[str] = ''
 	status: str = 'wait'  # 枚举值'blocked'（阻塞）, 'doing'（进行中）, 'wait'(未开始), 'done'（完成）
 	deleted: str = '0'
 
@@ -34,10 +34,44 @@ class TestTask(BaseModel):
 				"build": "v1.0.0.0",
 				"owner": "zyp",
 				"pri": 2,
-				"begin": "2021-11-18",
-				"end": "2021-11-18",
+				"begin": "2021-11-18（一定要传值，不然默认为当天）", #
+				"end": "2021-11-18（一定要传值，不然默认为当天）",
 				"mailto": ",zyp,zl",
 				"desc": "这是描述"
+			}
+		}
+
+
+class TestTaskWithoutReport1(BaseModel):
+	id: Optional[int] = 0
+	product: Optional[int] = 0
+	project: Optional[int] = 0
+	owner: Optional[str] = None
+
+	class Config:
+		schema_extra = {
+			"example": {
+				"id": 0,
+				"product": 0,
+				"project": 0,
+				"owner": "zyp",
+			}
+		}
+
+
+class TestTaskWithoutReport(BaseModel):
+	id: Optional[list] = None
+	product: Optional[list] = None
+	project: Optional[list] = None
+	owner: Optional[str] = None
+
+	class Config:
+		schema_extra = {
+			"example": {
+				"id": [],
+				"product": [],
+				"project": [],
+				"owner": "zyp",
 			}
 		}
 

@@ -7,11 +7,7 @@
 
 from pydantic import BaseModel
 from typing import Optional, Union
-from datetime import datetime
 from datetime import date
-
-
-# from typing import Union
 
 
 # 常用的用于数据接口schema定义与检查的库
@@ -22,7 +18,7 @@ class TestReport(BaseModel):
 	id: Optional[int]  # 新增时id不用填写
 	deleted: Optional[str] = '0'
 	createdBy: str
-	createdDate: Optional[str] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 新增时创建时间不需要填写,默认为当前时间
+	createdDate: Optional[str]  # 新增时创建时间不需要填写,默认为当前时间
 	product: int
 	project: int
 	tasks: str
@@ -63,13 +59,31 @@ class TestReport(BaseModel):
 			}
 		}
 
-#
-# class TestReportUpdate(TestReport):
-# 	id: int
+
+class AutoTestReport(BaseModel):
+	task_id: int
+	test_time: Optional[str]
+	test_url: Optional[str]
+	test_client: Optional[str]
+	test_tool: Optional[str]
+	test_content: Optional[str]
+	risk_evaluation: Optional[str]
+	summary: Optional[str]
+
+	class Config:
+		schema_extra = {
+			"example": {
+				"task_id": 0,
+				"test_time": "1MD(测试耗时)",
+				"test_url": "test.ris.com(测试地址)",
+				"test_client": "Win10 PRO(测试客户机的环境情况)",
+				"test_tool": "DevTool、F12（测试过程中使用的工具）",
+				"test_content": "测试内容",
+				"risk_evaluation": "风险评估",
+				"summary": "测试总结"
+			}
+		}
 
 
 if __name__ == "__main__":
-	from app.routers.business_auto_create_report import generate_report
-
-	r = TestReport(**generate_report(648))
-	print(r.json())
+	pass

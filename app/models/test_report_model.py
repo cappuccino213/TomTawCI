@@ -6,9 +6,6 @@
 """
 from sqlalchemy import Column, Integer, Date, DateTime, Enum, String, Text
 from app.db.database import Base
-# from app.db.database import Session
-from datetime import datetime
-# from app.schemas import test_report_schemas
 
 
 class TestReportModel(Base):
@@ -31,7 +28,7 @@ class TestReportModel(Base):
 	objectType = Column(String(20))
 	objectID = Column(Integer)
 	createdBy = Column(String(30))
-	createdDate = Column(DateTime, default=datetime.now())
+	createdDate = Column(DateTime)
 	deleted = Column(Enum('1', '0'), default='0')
 
 	def __init__(self, fields_dict: dict):

@@ -7,10 +7,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from app.config import *
+# from app.config import SQLALCHEMY_DATABASE_URL,SQL_ECHO
+from app.config import DATABASE_CONFIGURE
 
 # 创建SQLAlchemy的engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True, pool_pre_ping=True)
+engine = create_engine(DATABASE_CONFIGURE["SQLALCHEMY_DATABASE_URL"], echo=DATABASE_CONFIGURE["SQL_ECHO"],
+					   pool_pre_ping=True)
 
 # 创建SessionLocal类,每个实例都是一个数据库的会话
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -51,6 +53,23 @@ def create(schema):
 		Session.add(schema)
 		Session.commit()
 		Session.refresh(schema)
+	except Exception as e:
+		print(str(e))
+		Session.rollback()
+		Session.flush()
+
+
+# 批量新增
+def create_all(schemas):
+	"""
+	可以批量insert数据
+	:param schemas: list(schema)
+	:return:
+	"""
+	try:
+		Session.add_all(schemas)
+		Session.commit()
+		Session.refresh(schemas)
 	except Exception as e:
 		print(str(e))
 		Session.rollback()

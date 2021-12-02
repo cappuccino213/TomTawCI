@@ -5,7 +5,7 @@
 @Contact : yeahcheung213@163.com
 """
 from pydantic import BaseModel
-from typing import Optional, Union
+from typing import Optional
 
 
 class User(BaseModel):

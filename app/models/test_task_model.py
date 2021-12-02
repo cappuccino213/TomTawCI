@@ -24,10 +24,10 @@ class TestTaskModel(Base):
 	end = Column(Date, default=date.today())
 	mailto = Column(Text)
 	desc = Column(Text)
-	report = Column(Text, default='CI')  # 数据库中为非空字段给个默认值
+	report = Column(Text, default='CI系统自动生成')  # 数据库中为非空字段给个默认值
 	auto = Column(String(10), default='no')
 	subStatus = Column(String(30), default='NA')
-	status = Column(Enum('blocked', 'doing', 'wait', 'done'),default='wait')
+	status = Column(Enum('blocked', 'doing', 'wait', 'done'), default='wait')
 	deleted = Column(Enum('0', '1'), default='0')
 
 	def __init__(self, fields_dict: dict):
@@ -50,27 +50,26 @@ class TestTaskModel(Base):
 		return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
-"""
-调用统一的CRUD操作，此处不用再定义
-# 通过id获取测试单
-def get_by_id(task_id: int):
-	return Session.query(TestTaskModel).filter(TestTaskModel.id == task_id).first()
+# 未写测试报告的测试单
+class TestTaskWithoutReport(Base):
+	__tablename__ = "zt_testtask_without_report"
+
+	id = Column(Integer, primary_key=True)
+	name = Column(String(90))
+	product = Column(Integer)
+	project = Column(Integer)
+	build = Column(String(30))
+	owner = Column(String(30))
+	begin = Column(Date, default=date.today())
+	end = Column(Date, default=date.today())
+	desc = Column(Text)
+
+	# 用将数据列转换成dict
+	def to_dict(self):
+		return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
-# 新增
-def create(test_task: test_task_schemas.TestTask):
-	try:
-		Session.add(test_task)
-		Session.commit()
-		Session.refresh(test_task)
-	except Exception as e:
-		print(str(e))
-		Session.rollback()
-		Session.flush()
-
-"""
-
-"""与测试单相关的函数"""
+"""TestTaskModel相关的函数"""
 
 
 # 通过测试单号获取版本详情
@@ -81,6 +80,47 @@ def get_build_details(task_id):
 	return res_list._mapping  # 返回字典项
 
 
+"""TestTaskWithoutReport"""
+
+
+# 单条件查询
+def query_single_condition(condition: dict):
+	result = Session.query(TestTaskWithoutReport)
+	if condition.get('id') != 0:
+		result = result.filter(TestTaskWithoutReport.id == condition.get('id'))
+	if condition.get('product') != 0:
+		result = result.filter(TestTaskWithoutReport.product == condition.get('product'))
+	if condition.get('project') != 0:
+		result = result.filter(TestTaskWithoutReport.project == condition.get('project'))
+	if condition.get('owner') != '':
+		result = result.filter(TestTaskWithoutReport.owner == condition.get('owner'))
+	return result.all()
+
+
+# 多条件查询
+def query_multiple_condition(condition: dict):
+	result = Session.query(TestTaskWithoutReport)
+	if len(condition.get('id')):
+		result = result.filter(TestTaskWithoutReport.id.in_(condition.get('id')))
+	if len(condition.get('product')):
+		result = result.filter(TestTaskWithoutReport.product.in_(condition.get('product')))
+	if len(condition.get('project')):
+		result = result.filter(TestTaskWithoutReport.project.in_(condition.get('project')))
+	if condition.get('owner'):
+		result = result.filter(TestTaskWithoutReport.owner == (condition.get('owner')))
+	return result.all()
+
+
 if __name__ == "__main__":
 	# print(get_by_id(245).to_dict().get('status'))
-	print(get_build_details(643))
+	# print(get_build_details(643))
+	# print(query_multiple_condition({'id':666}))
+	c = {
+		"id": [666],
+		"product": [0],
+		"project": [0],
+		"owner": ""
+	}
+	# print(query_single_condition(c))
+
+	print(query_multiple_condition(c)[0].to_dict())

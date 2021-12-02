@@ -7,7 +7,7 @@
 from app.db.database import *
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
-from app.models.test_task_model import TestTaskModel
+from app.models.test_task_model import *
 from app.utils import response_code
 from app.schemas import test_task_schemas
 
@@ -37,6 +37,14 @@ async def test_task_create(test_task: test_task_schemas.TestTask):
 	else:
 		return response_code.resp_400(message="测试单新增失败")
 
+
+@router.post("/get-without-report", name="获取无测试报告的测试单列表")
+async def no_report_task_multiple_query(test_task_condition: test_task_schemas.TestTaskWithoutReport):
+	task_list = query_multiple_condition(test_task_condition.dict())
+	if task_list:
+		return response_code.resp_200(task_list)
+	else:
+		return response_code.resp_400(message="暂无数据")
 
 if __name__ == "__main__":
 	pass

@@ -51,12 +51,33 @@ def report_html2string(html_file, summary: dict):
 	return html_str
 
 
+# 测试单模板
 def task_html2string(html_file, desc: dict):
 	with open(html_file, 'r', encoding="utf-8") as f:
 		html_str = f.read().format(ifSmoke=desc.get('ifSmoke'), manTime=desc.get('manTime'),
 								   testType=desc.get('testType'),
-								   testSuggest=desc.get('testSuggest'))
+								   testSuggest=desc.get('testSuggest'), buildDesc=desc.get('buildDesc'))
 
+	return html_str
+
+
+# 发布单模板
+def release_html2string(html_file, desc: dict):
+	"""
+	根据描述的信息，按照制定的html模板生成发布描述的html字符串信息
+	:param desc_info:
+	:return: html的str
+	"""
+	with open(html_file, 'r', encoding="utf-8") as f:
+		html_str = f.read().format(releaseBuild=desc.get('releaseBuild'),
+								   applyScope=desc.get('applyScope'),
+								   releaseContent=desc.get('releaseContent'),
+								   changelogUrl=desc.get('changelogUrl'),
+								   updateNote=desc.get('updateNote'),
+								   attention=desc.get('attention'),
+								   releaseLink=desc.get('releaseLink'),
+								   members=desc.get('members'),
+								   releaser=desc.get('releaser'))
 	return html_str
 
 

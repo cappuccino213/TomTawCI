@@ -34,7 +34,7 @@ class Build(BaseModel):
 				"builder": "zyp(禅道的账号)",
 				"scmPath": r"\\192.168.1.19\delivery\eWordRIS\V2.2.0.4286.20211117",
 				"filePath": r"\\192.168.1.19\delivery\eWordRIS\V2.2.0.4286.20211117",
-				"date": "2021-11-18(不传默认为当天)",
+				"date": "2021-11-18(不传默认为当天)",  #
 				"desc": "1.新增xxxx模块 2.优化xxxx功能 3.修复xxxx问题 4.完成xxxx需求"
 			}
 		}
