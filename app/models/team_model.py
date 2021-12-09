@@ -1,11 +1,12 @@
 """
-@File : team_models.py
+@File : team_model.py
 @Date : 2021/11/30 15:01
 @Author: 九层风（YePing Zhang）
 @Contact : yeahcheung213@163.com
 """
 from app.db.database import Base, Session
-from sqlalchemy import Column, Integer, String, Text, Enum, Date, Float, DECIMAL
+from sqlalchemy import Column, Integer, String, Enum, Date, Float, DECIMAL
+from app.db.database import execute_sql
 
 
 # 项目、任务的团队成员
@@ -35,5 +36,28 @@ def query_by_project(project_id):
 	return Session.query(TeamModel).filter(TeamModel.root == project_id).all()
 
 
+# 获取团队的真实姓名、email
+def get_team_info(project_id: int):
+	sql_statement = """
+	SELECT
+	zt.`root` AS project,
+	zt.role,
+	zt.account,
+	zu.`realname` as `name`,
+	zu.email 
+FROM
+	zt_team zt
+	LEFT JOIN zt_user zu ON zt.`account` = zu.`account` 
+WHERE
+	zt.`type` = 'project' 
+	AND zu.deleted = '0'
+	AND zt.`root`={}
+	""".format(project_id)
+	return execute_sql(sql_statement)
+
+
 if __name__ == "__main__":
-	print(TeamModel().query_by_project(66).to_dict())
+	# print(TeamModel().query_by_project(66).to_dict())
+	# print(get_team_info(81))
+	team_infos = get_team_info(81)
+	print([(team['name'], team['email']) for team in team_infos])

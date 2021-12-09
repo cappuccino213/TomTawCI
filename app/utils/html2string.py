@@ -76,7 +76,10 @@ def release_html2string(html_file, desc: dict):
 								   updateNote=desc.get('updateNote'),
 								   attention=desc.get('attention'),
 								   releaseLink=desc.get('releaseLink'),
-								   members=desc.get('members'),
+								   # members=desc.get('members'),
+								   devMember=desc.get('devMember'),
+								   qaMember=desc.get('qaMember'),
+								   PMMember=desc.get('PMMember'),
 								   releaser=desc.get('releaser'))
 	return html_str
 

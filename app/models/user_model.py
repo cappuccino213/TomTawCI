@@ -1,5 +1,5 @@
 """
-@File : user_models.py
+@File : user_model.py
 @Date : 2021/11/23 16:33
 @Author: 九层风（YePing Zhang）
 @Contact : yeahcheung213@163.com
@@ -64,5 +64,33 @@ def query_multiple_condition(condition: dict):
 	return result.all()
 
 
+# 根据部门、姓名、用户获取用户邮件信息
+def get_user_email(condition: dict) -> list[tuple]:
+	"""
+	:param condition: 单值{'dept':5,'account':'fmf','realname':'方敏芳'}
+	:param condition: 或者批量{'dept':5,'account':['fmf','qianq'],'realname':['方敏芳','钱迁']}
+	:return:[('方敏芳','1661886732@qq.com'),('钱迁','360309531@qq.com')]
+	"""
+	result = Session.query(UserModel).filter(UserModel.deleted == '0')
+	if condition.get('dept'):
+		if isinstance(condition.get('dept'), int):
+			result = result.filter(UserModel.dept == condition.get('dept'))
+		if isinstance(condition.get('dept'), list):
+			result = result.filter(UserModel.dept.in_(condition.get('dept')))
+	if condition.get('account'):
+		if isinstance(condition.get('account'), str):
+			result = result.filter(UserModel.account == condition.get('account'))
+		if isinstance(condition.get('account'), list):
+			result = result.filter(UserModel.account.in_(condition.get('account')))
+	if condition.get('realname'):
+		if isinstance(condition.get('realname'), str):
+			result = result.filter(UserModel.realname == condition.get('realname'))
+		if isinstance(condition.get('realname'), list):
+			result = result.filter(UserModel.realname.in_(condition.get('realname')))
+	if result:
+		return [(res.realname, res.email) for res in result]
+
+
 if __name__ == "__main__":
-	pass
+	print(get_user_email({'dept': 5, 'account': ['hmc', 'gjh']}))
+	print(get_user_email({'dept': 5, 'account': [], 'realname': '费鑫'}))

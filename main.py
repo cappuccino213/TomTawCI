@@ -55,6 +55,11 @@ if __name__ == "__main__":
 				debug=RUN_CONFIGURE['DEBUG'], workers=RUN_CONFIGURE['WORKERS'])
 # uvicorn.run(app='main:app', host="0.0.0.0", port=8889, reload=True, debug=False, workers=4)
 
-# 命令行启动
-# 部署到linux可以使用gunicorn框架做监控 https://www.jianshu.com/p/c292e2f79c2c
-# uvicorn main:app --host 0.0.0.0 --port 8889 --reload
+
+
+"""
+命令行启动
+部署到linux可以使用gunicorn框架做监控 https://www.jianshu.com/p/c292e2f79c2c
+uvicorn main:app --host 0.0.0.0 --port 8889 --reload
+"""
+

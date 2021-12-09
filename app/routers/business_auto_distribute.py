@@ -9,8 +9,10 @@ from app.schemas import release_schemas
 from app.config import ROOT_DIRECTORY, AUTO_DISTRIBUTE
 from app.utils import html2string, response_code
 from datetime import date
-from app.models.release_models import ReleaseModel
+from app.models.release_model import ReleaseModel
+from app.models.build_model import query_multiple_condition
 from app.db.database import *
+from app.config import AUTO_DISTRIBUTE
 import os
 
 RELEASE_TEMPLATE_PATH = os.path.join(ROOT_DIRECTORY, 'static', AUTO_DISTRIBUTE['TEMPLATE'])
@@ -21,6 +23,14 @@ router = APIRouter(prefix="/ewordci/auto-distribute", tags=["business"])
 # 从入参取出发布单的入库dict
 def get_release_dict_from_param(param: release_schemas.CreateRelease):
 	param_dict = param.dict()
+
+	# 相关人员获取，由于禅道权限划分的特殊性，需要特殊处理
+	dev_member = ','.join([member['name'] for member in param_dict['members'] if member['role'] in ['研发', '研发主管']])
+	qa_member = ','.join([member['name'] for member in param_dict['members'] if member['role'] == '测试负责人'])
+	pm_member = ','.join(
+		[member['name'] for member in param_dict['members'] if (member['role'] == '研发主管' and member['name'] != '胡东慧')])
+
+	# 发布描述处理
 	desc_dict = dict(releaseBuild='{}.{}.b{}'.format(param_dict['build_name'], param_dict['release_type'],
 													 str(date.today()).replace('-', '')),
 					 applyScope=param_dict['apply_scope'],
@@ -29,8 +39,12 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 					 updateNote=param_dict['update_note'],
 					 attention=param_dict['attention'],
 					 releaseLink=param_dict['release_link'],
-					 members=param_dict['members'],
+					 # members=param_dict['members'],
+					 devMember=dev_member,
+					 qaMember=qa_member,
+					 PMMember=pm_member,
 					 releaser=param_dict['releaser'])
+	# 描述转化成html
 	desc = html2string.release_html2string(RELEASE_TEMPLATE_PATH, desc_dict)
 	return dict(product=param_dict['product'], build=param_dict['build'],
 				name='{} {}'.format(param_dict['product_name'], desc_dict['releaseBuild']), marker=param_dict['marker'],
@@ -41,9 +55,16 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 async def auto_distribute(release_info: release_schemas.CreateRelease):
 	release_dict = get_release_dict_from_param(release_info)
 	db_release = ReleaseModel(release_dict)
+	# 创建发布单
 	create(db_release)
+	# 获取递交路径、打包路径，作为返参用
+	build_param = dict(name=release_info.build_name, product=release_info.product, project=release_info.project)
+	src_dir_path = query_multiple_condition(build_param)[0].filePath  # 如果获取到结果为空这里就会报错
+	dst_file_path = os.path.join(AUTO_DISTRIBUTE['COMPRESS_PATH'],
+								 release_info.product_name, '{}.7z'.format(release_dict['name']))
+	compress_info = dict(src_dir_path=src_dir_path, dst_file_path=dst_file_path)
 	if db_release.id:  # 根据有没有生成新的id判断是否插入成功
-		return response_code.resp_200(db_release.to_dict())
+		return response_code.resp_200({'release': db_release.to_dict(), 'compress_info': compress_info})
 	else:
 		return response_code.resp_400(message="发布单创建失败")
 

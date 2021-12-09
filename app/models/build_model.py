@@ -14,7 +14,7 @@ from datetime import date
 class BuildModel(Base):
 	__tablename__ = "zt_build"
 
-	id = Column(Integer, primary_key=True)
+	id = Column(Integer, primary_key=True, autoincrement=True)
 	name = Column(String(150))
 	branch = Column(Integer, default=0)
 	product = Column(Integer)
@@ -29,7 +29,7 @@ class BuildModel(Base):
 	deleted = Column(Enum('0', '1'), default='0')
 
 	def __init__(self, fields_dict: dict):
-		self.id = fields_dict.get('id')
+		# self.id = fields_dict.get('id')
 		self.name = fields_dict.get('name')
 		self.branch = fields_dict.get('branch')
 		self.product = fields_dict.get('product')
@@ -56,6 +56,8 @@ def query_by_project(project_id: int):
 # 多条件查询版本信息
 def query_multiple_condition(condition: dict):
 	result = Session.query(BuildModel).filter(BuildModel.deleted == '0')
+	if condition.get('id'):
+		result = result.filter(BuildModel.id == condition.get('id'))
 	if condition.get('product'):
 		result = result.filter(BuildModel.product == condition.get('product'))
 	if condition.get('project'):
@@ -67,11 +69,11 @@ def query_multiple_condition(condition: dict):
 	return result.all()
 
 
+# 获取当前最大的id号
+def get_latest_max_id():
+	return Session.query(BuildModel).order_by(desc(BuildModel.id)).first().to_dict()['id']
+
+
 if __name__ == "__main__":
 	pass
-	d = {
-		"product": "7",
-		"project": "66",
-		"name": "v1.0.0.1(版本名称)"
-	}
-	print(query_multiple_condition(d))
+

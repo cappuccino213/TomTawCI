@@ -6,7 +6,7 @@
 """
 from app.db.database import *
 from fastapi import APIRouter
-from app.models.user_models import *
+from app.models.user_model import *
 from app.utils import response_code
 from app.schemas import user_schemas
 

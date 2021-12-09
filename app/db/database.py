@@ -7,8 +7,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-# from app.config import SQLALCHEMY_DATABASE_URL,SQL_ECHO
 from app.config import DATABASE_CONFIGURE
+from app.utils.log import *
 
 # 创建SQLAlchemy的engine
 engine = create_engine(DATABASE_CONFIGURE["SQLALCHEMY_DATABASE_URL"], echo=DATABASE_CONFIGURE["SQL_ECHO"],
@@ -30,6 +30,7 @@ def get_list(primary_id: int, models: Base):
 	:param models: 继承Base的对象
 	:return: 返回类型是list
 	"""
+	logging.info('获取成功')
 	return Session.query(models).filter(models.id == primary_id).all()
 
 
@@ -87,7 +88,7 @@ def update(schema, models: Base):
 	update_column = get(schema.id, models)
 	if update_column:  # 判断被修改的数据是否存在
 		update_dict = schema.dict()  # 将查询到的列记录转成dict类型
-		try:  # 使用遍历k,v方式给对应赋值
+		try:  # 使用遍历k,v方式对应赋值
 			for k, v in update_dict.items():
 				setattr(update_column, k, v)  # setattr给对象的属性赋值 https://www.runoob.com/python/python-func-setattr.html
 			Session.commit()  # 提交修改
@@ -140,4 +141,6 @@ WHERE
 
 	# res_list = execute_sql(sql)
 	# [print(i._mapping) for i in res_list]
-	print(execute_sql(sql))
+	# print(execute_sql(sql))
+	from app.models import release_model
+	print(get(237,release_model.ReleaseModel))

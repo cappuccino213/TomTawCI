@@ -25,6 +25,15 @@ async def get_build_info(build_id: int):
 		return response_code.resp_404(message="找不到id={}的版本信息".format(build_id))
 
 
+@router.post("/query", name="查询版本信息")
+async def query_build(param: build_schemas.QueryBuild):
+	build_info = query_multiple_condition(param.dict())
+	if build_info:
+		return response_code.resp_200(build_info)
+	else:
+		return response_code.resp_404(message="找不到版本信息")
+
+
 @router.post("/create", response_model=build_schemas.Build, name="创建版本")
 async def build_create(build: build_schemas.Build):
 	build_json = jsonable_encoder(build)

@@ -1,5 +1,5 @@
 """
-@File : release_models.py
+@File : release_model.py
 @Date : 2021/11/29 17:03
 @Author: 九层风（YePing Zhang）
 @Contact : yeahcheung213@163.com
@@ -53,6 +53,7 @@ class ReleaseModel(Base):
 def query_by_product(product_id: int):
 	return Session.query(ReleaseModel).filter(ReleaseModel.product == product_id, ReleaseModel.deleted == '0').order_by(
 		desc(ReleaseModel.id)).first()
+
 
 
 if __name__ == "__main__":
