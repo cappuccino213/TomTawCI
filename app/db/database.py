@@ -12,7 +12,7 @@ from app.utils.log import *
 
 # 创建SQLAlchemy的engine
 engine = create_engine(DATABASE_CONFIGURE["SQLALCHEMY_DATABASE_URL"], echo=DATABASE_CONFIGURE["SQL_ECHO"],
-					   pool_pre_ping=True)
+					   pool_pre_ping=True, pool_recycle=60)  # 解决Mysql Server has gone away的问题
 
 # 创建SessionLocal类,每个实例都是一个数据库的会话
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -143,4 +143,5 @@ WHERE
 	# [print(i._mapping) for i in res_list]
 	# print(execute_sql(sql))
 	from app.models import release_model
-	print(get(237,release_model.ReleaseModel))
+
+	print(get(237, release_model.ReleaseModel))
