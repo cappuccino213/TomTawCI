@@ -8,6 +8,7 @@ from app.db.database import Base, Session
 from sqlalchemy import Column, Integer, String, Date, Text, Enum
 from sqlalchemy import desc
 from datetime import date
+from app.utils.custom_log import *
 
 
 # 版本信息
@@ -49,24 +50,34 @@ class BuildModel(Base):
 
 # 筛选出各项目中最新的版本号
 def query_by_project(project_id: int):
-	return Session.query(BuildModel).filter(BuildModel.project == project_id, BuildModel.deleted == '0').order_by(
-		desc(BuildModel.id)).first()
+	try:
+		return Session.query(BuildModel).filter(BuildModel.project == project_id, BuildModel.deleted == '0').order_by(
+			desc(BuildModel.id)).first()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 # 多条件查询版本信息
 def query_multiple_condition(condition: dict):
-	result = Session.query(BuildModel).filter(BuildModel.deleted == '0')
-	if condition.get('id'):
-		result = result.filter(BuildModel.id == condition.get('id'))
-	if condition.get('product'):
-		result = result.filter(BuildModel.product == condition.get('product'))
-	if condition.get('project'):
-		result = result.filter(BuildModel.project == condition.get('project'))
-	if condition.get('name'):
-		result = result.filter(BuildModel.name == condition.get('name'))
-	if condition.get('date'):
-		result = result.filter(BuildModel.gender == condition.get('date'))
-	return result.all()
+	try:
+		result = Session.query(BuildModel).filter(BuildModel.deleted == '0')
+		if condition.get('id'):
+			result = result.filter(BuildModel.id == condition.get('id'))
+		if condition.get('product'):
+			result = result.filter(BuildModel.product == condition.get('product'))
+		if condition.get('project'):
+			result = result.filter(BuildModel.project == condition.get('project'))
+		if condition.get('name'):
+			result = result.filter(BuildModel.name == condition.get('name'))
+		if condition.get('date'):
+			result = result.filter(BuildModel.gender == condition.get('date'))
+		return result.all()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 # 获取当前最大的id号

@@ -6,6 +6,7 @@
 """
 
 from pathlib import Path
+import time
 
 """数据库配置"""
 DATABASE_CONFIGURE = {
@@ -16,8 +17,9 @@ DATABASE_CONFIGURE = {
 
 """CI相关配置"""
 # 项目根目录
-# ROOT_DIRECTORY = r'D:\Python\Project\pythonProject\TomTawCI\app'
-ROOT_DIRECTORY = Path(Path.cwd(), 'app')  # 从main函数运行，目录刚好到app层
+ROOT_DIRECTORY = Path(Path.cwd(), 'app').resolve()  # 从main函数运行，目录刚好到app层
+# pathlib路径操作可以参考
+# https://zhuanlan.zhihu.com/p/139783331
 
 # 为了参数import时方便，用dict来管理各自相关的参数集
 # 自动提测
@@ -37,13 +39,23 @@ AUTO_DISTRIBUTE = {
 """CD相关配置"""
 
 """工具类配置"""
-# 邮件配置
+# 邮件配置 用的z_mail暂时不需要这个配置
 MAIL_CONFIG = {
 	'MAIL_SERVER': 'smtp.qq.com',
 	'PORT': 465
 }
 
 # 日志配置
+# fastapi的日志配置，由于各函数的路径与main函数层次不一故单独在custom_log中配置
+LOG_CONFIG = {
+	'IF_DEBUG': True,
+	'LOG_PATH': Path.home().joinpath(ROOT_DIRECTORY, f'log\\{time.strftime("%Y%m%d")}.log'),
+	'ROTATION': '8:00',  # 每个日志多大
+	'RETENTION': '10 days'  # 保留时长
+}
+# logger.add("file_1.log", rotation="500 MB")  # 自动循环过大的文件
+# logger.add("file_2.log", rotation="12:00")  # 每天中午创建新文件
+# logger.add("file_3.log", rotation="1 week")  # 一旦文件太旧进行循环
 
 """运行参数配置"""
 RUN_CONFIGURE = {
@@ -55,4 +67,5 @@ RUN_CONFIGURE = {
 
 # 更多参数详见\TomTawCI\venv\Lib\site-packages\uvicorn\main.py
 if __name__ == "__main__":
-	print(ROOT_DIRECTORY)
+	print(LOG_CONFIG)
+# print(ROOT_DIRECTORY1)

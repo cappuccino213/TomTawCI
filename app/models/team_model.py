@@ -7,6 +7,7 @@
 from app.db.database import Base, Session
 from sqlalchemy import Column, Integer, String, Enum, Date, Float, DECIMAL
 from app.db.database import execute_sql
+from app.utils.custom_log import *
 
 
 # 项目、任务的团队成员
@@ -33,27 +34,37 @@ class TeamModel(Base):
 
 # 根据项目id查询团队
 def query_by_project(project_id):
-	return Session.query(TeamModel).filter(TeamModel.root == project_id).all()
+	try:
+		return Session.query(TeamModel).filter(TeamModel.root == project_id).all()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 # 获取团队的真实姓名、email
 def get_team_info(project_id: int):
-	sql_statement = """
-	SELECT
-	zt.`root` AS project,
-	zt.role,
-	zt.account,
-	zu.`realname` as `name`,
-	zu.email 
-FROM
-	zt_team zt
-	LEFT JOIN zt_user zu ON zt.`account` = zu.`account` 
-WHERE
-	zt.`type` = 'project' 
-	AND zu.deleted = '0'
-	AND zt.`root`={}
-	""".format(project_id)
-	return execute_sql(sql_statement)
+	try:
+		sql_statement = """
+		SELECT
+		zt.`root` AS project,
+		zt.role,
+		zt.account,
+		zu.`realname` as `name`,
+		zu.email 
+	FROM
+		zt_team zt
+		LEFT JOIN zt_user zu ON zt.`account` = zu.`account` 
+	WHERE
+		zt.`type` = 'project' 
+		AND zu.deleted = '0'
+		AND zt.`root`={}
+		""".format(project_id)
+		return execute_sql(sql_statement)
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ from app.db.database import Base
 from sqlalchemy import Column, String, Integer, Date, Enum, Text
 from app.db.database import Session
 from datetime import date
+from app.utils.custom_log import *
 
 
 class TestTaskModel(Base):
@@ -74,10 +75,15 @@ class TestTaskWithoutReport(Base):
 
 # 通过测试单号获取版本详情
 def get_build_details(task_id):
-	cur_res = Session.execute(
-		'SELECT * FROM zt_build WHERE id in (SELECT build FROM zt_testtask WHERE id = :id)', {'id': task_id})
-	res_list = cur_res.first()
-	return res_list._mapping  # 返回字典项
+	try:
+		cur_res = Session.execute(
+			'SELECT * FROM zt_build WHERE id in (SELECT build FROM zt_testtask WHERE id = :id)', {'id': task_id})
+		res_list = cur_res.first()
+		return res_list._mapping  # 返回字典项
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 """TestTaskWithoutReport"""
@@ -85,30 +91,40 @@ def get_build_details(task_id):
 
 # 单条件查询
 def query_single_condition(condition: dict):
-	result = Session.query(TestTaskWithoutReport)
-	if condition.get('id') != 0:
-		result = result.filter(TestTaskWithoutReport.id == condition.get('id'))
-	if condition.get('product') != 0:
-		result = result.filter(TestTaskWithoutReport.product == condition.get('product'))
-	if condition.get('project') != 0:
-		result = result.filter(TestTaskWithoutReport.project == condition.get('project'))
-	if condition.get('owner') != '':
-		result = result.filter(TestTaskWithoutReport.owner == condition.get('owner'))
-	return result.all()
+	try:
+		result = Session.query(TestTaskWithoutReport)
+		if condition.get('id') != 0:
+			result = result.filter(TestTaskWithoutReport.id == condition.get('id'))
+		if condition.get('product') != 0:
+			result = result.filter(TestTaskWithoutReport.product == condition.get('product'))
+		if condition.get('project') != 0:
+			result = result.filter(TestTaskWithoutReport.project == condition.get('project'))
+		if condition.get('owner') != '':
+			result = result.filter(TestTaskWithoutReport.owner == condition.get('owner'))
+		return result.all()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 # 多条件查询
 def query_multiple_condition(condition: dict):
-	result = Session.query(TestTaskWithoutReport)
-	if len(condition.get('id')):
-		result = result.filter(TestTaskWithoutReport.id.in_(condition.get('id')))
-	if len(condition.get('product')):
-		result = result.filter(TestTaskWithoutReport.product.in_(condition.get('product')))
-	if len(condition.get('project')):
-		result = result.filter(TestTaskWithoutReport.project.in_(condition.get('project')))
-	if condition.get('owner'):
-		result = result.filter(TestTaskWithoutReport.owner == (condition.get('owner')))
-	return result.all()
+	try:
+		result = Session.query(TestTaskWithoutReport)
+		if len(condition.get('id')):
+			result = result.filter(TestTaskWithoutReport.id.in_(condition.get('id')))
+		if len(condition.get('product')):
+			result = result.filter(TestTaskWithoutReport.product.in_(condition.get('product')))
+		if len(condition.get('project')):
+			result = result.filter(TestTaskWithoutReport.project.in_(condition.get('project')))
+		if condition.get('owner'):
+			result = result.filter(TestTaskWithoutReport.owner == (condition.get('owner')))
+		return result.all()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 if __name__ == "__main__":

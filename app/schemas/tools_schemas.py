@@ -5,8 +5,7 @@
 @Contact : yeahcheung213@163.com
 """
 # 关于工具的schema
-# from pydantic import BaseModel
-# from typing import Optional
+from pydantic import BaseModel, EmailStr
 from enum import Enum
 
 
@@ -24,15 +23,19 @@ from enum import Enum
 # 				"password": "TomTaw@HZ"
 # 			}
 # 		}
-
+# 邮件通知类型
 class EmailType(str, Enum):
-	test_report = 'test_report'
 	test_task = 'test_task'
+	test_report = 'test_report'
 	release = 'release'
 
 
-# class EmailNotice(BaseModel):
-# 	business_id: int
+# 邮件通知入参
+class EmailNotice(BaseModel):
+	notice_type: EmailType
+	business_id: int
+	server_account: EmailStr
+	server_password: str
 
 
 if __name__ == "__main__":

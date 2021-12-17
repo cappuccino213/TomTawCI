@@ -8,11 +8,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config import DATABASE_CONFIGURE
-from app.utils.log import *
+from app.utils.custom_log import *
 
 # 创建SQLAlchemy的engine
 engine = create_engine(DATABASE_CONFIGURE["SQLALCHEMY_DATABASE_URL"], echo=DATABASE_CONFIGURE["SQL_ECHO"],
-					   pool_pre_ping=True, pool_recycle=60)  # 解决Mysql Server has gone away的问题
+					   pool_pre_ping=True, pool_recycle=3600)  # 解决Mysql Server has gone away的问题
+# poolclass=NullPool)  # 如果想要在调用conn.close()时，真正的关闭连接，可以使用poolclass=NullPool属性
 
 # 创建SessionLocal类,每个实例都是一个数据库的会话
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -30,8 +31,12 @@ def get_list(primary_id: int, models: Base):
 	:param models: 继承Base的对象
 	:return: 返回类型是list
 	"""
-	logging.info('获取成功')
-	return Session.query(models).filter(models.id == primary_id).all()
+	try:
+		return Session.query(models).filter(models.id == primary_id).all()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 def get(primary_id: int, models: Base):
@@ -41,7 +46,13 @@ def get(primary_id: int, models: Base):
 	:param models: 继承Base的对象
 	:return:
 	"""
-	return Session.query(models).filter(models.id == primary_id).first()
+	try:
+		logging.info('获取成功')
+		return Session.query(models).filter(models.id == primary_id).first()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 # 新增
@@ -55,9 +66,11 @@ def create(schema):
 		Session.commit()
 		Session.refresh(schema)
 	except Exception as e:
-		print(str(e))
+		logging.error(str(e))
 		Session.rollback()
 		Session.flush()
+	finally:
+		Session.close()
 
 
 # 批量新增
@@ -72,9 +85,11 @@ def create_all(schemas):
 		Session.commit()
 		Session.refresh(schemas)
 	except Exception as e:
-		print(str(e))
+		logging.error(str(e))
 		Session.rollback()
 		Session.flush()
+	finally:
+		Session.close()
 
 
 # 更新
@@ -96,9 +111,11 @@ def update(schema, models: Base):
 			Session.refresh(update_column)
 			return update_column
 		except Exception as e:
-			print(str(e))
+			logging.error(str(e))
 			Session.rollback()
 			Session.flush()
+		finally:
+			Session.close()
 
 
 # 删除
@@ -112,36 +129,26 @@ def remove(primary_id, models: Base):
 			Session.refresh(remove_column)
 			return remove_column
 		except Exception as e:
-			print(str(e))
+			logging.error(str(e))
 			Session.rollback()
 			Session.flush()
+		finally:
+			Session.close()
 
 
 # 执行sql语句,返回list[dict]
 def execute_sql(statement):
-	cur_res = Session.execute(statement)
-	res_list = cur_res.all()
-	# return res_list  # 返回字典项
-	return [(res._mapping) for res in res_list]  # 返回字典项
+	try:
+		cur_res = Session.execute(statement)
+		res_list = cur_res.all()
+		return [(res._mapping) for res in res_list]  # 返回字典项
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 if __name__ == "__main__":
-	sql = """SELECT
-	product AS product_id,
-	pd.`name` AS product_name,
-	project AS project_id,
-	pj.`name` AS project_name 
-FROM
-	zt_projectproduct pp
-	LEFT JOIN zt_product pd ON pp.product = pd.id
-	LEFT JOIN zt_project pj ON pp.project = pj.id 
-WHERE
-	pd.deleted = '0' 
-	AND pj.deleted = '0'"""
-
-	# res_list = execute_sql(sql)
-	# [print(i._mapping) for i in res_list]
-	# print(execute_sql(sql))
 	from app.models import release_model
 
-	print(get(237, release_model.ReleaseModel))
+	print(get(666, release_model.ReleaseModel))

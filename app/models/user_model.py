@@ -6,6 +6,7 @@
 """
 from app.db.database import Base, Session
 from sqlalchemy import Column, Integer, String, Enum
+from app.utils.custom_log import *
 
 
 # 版本信息
@@ -47,21 +48,31 @@ class UserModel(Base):
 
 # 按角色筛选用户
 def query_by_dept(dept_value: str):
-	return Session.query(UserModel).filter(UserModel.dept == dept_value, UserModel.deleted == '0').all()
+	try:
+		return Session.query(UserModel).filter(UserModel.dept == dept_value, UserModel.deleted == '0').all()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 # 多条件查询用户
 def query_multiple_condition(condition: dict):
-	result = Session.query(UserModel).filter(UserModel.deleted == '0')
-	if condition.get('account'):
-		result = result.filter(UserModel.account == condition.get('account'))
-	if condition.get('dept'):
-		result = result.filter(UserModel.dept == condition.get('dept'))
-	if condition.get('role'):
-		result = result.filter(UserModel.role == condition.get('role'))
-	if condition.get('gender'):
-		result = result.filter(UserModel.gender == condition.get('gender'))
-	return result.all()
+	try:
+		result = Session.query(UserModel).filter(UserModel.deleted == '0')
+		if condition.get('account'):
+			result = result.filter(UserModel.account == condition.get('account'))
+		if condition.get('dept'):
+			result = result.filter(UserModel.dept == condition.get('dept'))
+		if condition.get('role'):
+			result = result.filter(UserModel.role == condition.get('role'))
+		if condition.get('gender'):
+			result = result.filter(UserModel.gender == condition.get('gender'))
+		return result.all()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 # 根据部门、姓名、用户获取用户邮件信息
@@ -71,24 +82,29 @@ def get_user_email(condition: dict) -> list[tuple]:
 	:param condition: 或者批量{'dept':5,'account':['fmf','qianq'],'realname':['方敏芳','钱迁']}
 	:return:[('方敏芳','1661886732@qq.com'),('钱迁','360309531@qq.com')]
 	"""
-	result = Session.query(UserModel).filter(UserModel.deleted == '0')
-	if condition.get('dept'):
-		if isinstance(condition.get('dept'), int):
-			result = result.filter(UserModel.dept == condition.get('dept'))
-		if isinstance(condition.get('dept'), list):
-			result = result.filter(UserModel.dept.in_(condition.get('dept')))
-	if condition.get('account'):
-		if isinstance(condition.get('account'), str):
-			result = result.filter(UserModel.account == condition.get('account'))
-		if isinstance(condition.get('account'), list):
-			result = result.filter(UserModel.account.in_(condition.get('account')))
-	if condition.get('realname'):
-		if isinstance(condition.get('realname'), str):
-			result = result.filter(UserModel.realname == condition.get('realname'))
-		if isinstance(condition.get('realname'), list):
-			result = result.filter(UserModel.realname.in_(condition.get('realname')))
-	if result:
-		return [(res.realname, res.email) for res in result]
+	try:
+		result = Session.query(UserModel).filter(UserModel.deleted == '0')
+		if condition.get('dept'):
+			if isinstance(condition.get('dept'), int):
+				result = result.filter(UserModel.dept == condition.get('dept'))
+			if isinstance(condition.get('dept'), list):
+				result = result.filter(UserModel.dept.in_(condition.get('dept')))
+		if condition.get('account'):
+			if isinstance(condition.get('account'), str):
+				result = result.filter(UserModel.account == condition.get('account'))
+			if isinstance(condition.get('account'), list):
+				result = result.filter(UserModel.account.in_(condition.get('account')))
+		if condition.get('realname'):
+			if isinstance(condition.get('realname'), str):
+				result = result.filter(UserModel.realname == condition.get('realname'))
+			if isinstance(condition.get('realname'), list):
+				result = result.filter(UserModel.realname.in_(condition.get('realname')))
+		if result:
+			return [(res.realname, res.email) for res in result]
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 if __name__ == "__main__":

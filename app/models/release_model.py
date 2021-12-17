@@ -8,6 +8,7 @@ from app.db.database import Base, Session
 from sqlalchemy import Column, Integer, String, Text, Enum, Date
 from datetime import date
 from sqlalchemy import desc
+from app.utils.custom_log import *
 
 
 # 发布单
@@ -51,9 +52,13 @@ class ReleaseModel(Base):
 
 # 筛选出各产品中最后发布的版本
 def query_by_product(product_id: int):
-	return Session.query(ReleaseModel).filter(ReleaseModel.product == product_id, ReleaseModel.deleted == '0').order_by(
-		desc(ReleaseModel.id)).first()
-
+	try:
+		return Session.query(ReleaseModel).filter(ReleaseModel.product == product_id, ReleaseModel.deleted == '0').order_by(
+			desc(ReleaseModel.id)).first()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 if __name__ == "__main__":

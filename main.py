@@ -21,7 +21,28 @@ from starlette.responses import RedirectResponse
 from app.config import RUN_CONFIGURE
 import uvicorn
 
-app = FastAPI()
+from app.utils.log_handle import *
+from app.config import LOG_CONFIG
+import sys
+
+
+# 引入日志模块
+def init_app():
+	application = FastAPI(title="eWordCIAPI 全网云CI系统", debug=LOG_CONFIG['IF_DEBUG'])
+	logging.getLogger().handlers = [InterceptHandler()]
+	logger.configure(
+		handlers=[{"sink": sys.stdout, "level": logging.DEBUG, "format": format_record}])
+	logger.add(LOG_CONFIG['LOG_PATH'], rotation=LOG_CONFIG['ROTATION'], encoding="utf-8", enqueue=True,
+			   retention=LOG_CONFIG['RETENTION'])
+	logger.debug('日志系统已加载')
+	logging.getLogger("uvicorn.access").handlers = [InterceptHandler()]
+	return application
+
+
+# 初始化app
+app = init_app()
+
+# app = FastAPI()
 
 """注册路由"""
 # 基础数据
@@ -42,7 +63,7 @@ app.include_router(business_auto_distribute.router)
 app.include_router(tools_router.router)
 
 
-@app.get("/", name="WelCome to fastapi!!!")
+@app.get("/", name="WelCome to CIAPI!")
 # 将根路径重定向到swagger文档
 async def root():
 	# return {"message": "Welcome to eWordCI"}
@@ -56,10 +77,8 @@ if __name__ == "__main__":
 # uvicorn.run(app='main:app', host="0.0.0.0", port=8889, reload=True, debug=False, workers=4)
 
 
-
 """
 命令行启动
 部署到linux可以使用gunicorn框架做监控 https://www.jianshu.com/p/c292e2f79c2c
 uvicorn main:app --host 0.0.0.0 --port 8889 --reload
 """
-

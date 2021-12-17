@@ -16,6 +16,15 @@ class BugSeverityNum(BaseModel):
 	mistake: int = 0
 	suggest: int = 0
 
+	class Config:
+		schema_extra = {
+			"example": {
+				"fatal": 1,
+				"severe": 2,
+				"mistake": 0,
+				"suggest": 0
+			}
+		}
 
 # 根据bug相关的提测版本质量的评估
 class BuildQualityEvaluation(BaseModel):

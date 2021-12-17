@@ -1,5 +1,5 @@
 """
-@File : log.py
+@File : custom_log.py
 @Date : 2021/12/3 10:06
 @Author: 九层风（YePing Zhang）
 @Contact : yeahcheung213@163.com
@@ -14,13 +14,14 @@ project_path = Path.cwd().parent
 log_path = Path(project_path, 'log')
 log_time = time.strftime('%Y%m%d')
 
-# loguru官网 http://loguru.readthedocs.io/
+
 class Logging:
 	__instance = None
 	logger.add(f"{log_path}/{log_time}.log", rotation="50MB", encoding="utf-8", enqueue=True, retention="10 days")
 
-	# 参数定义参考
+	# 参数定义参考 loguru官网 http://loguru.readthedocs.io/
 	# https://cloud.tencent.com/developer/article/1849382?from=article.detail.1640693
+	# https://cloud.tencent.com/developer/article/1664382
 	def __new__(cls, *args, **kwargs):
 		if not cls.__instance:
 			cls.__instance = super(Logging, cls).__new__(cls, *args, **kwargs)
