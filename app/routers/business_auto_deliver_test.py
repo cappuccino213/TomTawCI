@@ -102,6 +102,10 @@ async def generate_deliver_task(deliver_info: test_deliver_schemas.Deliver):
 	if deliver_info.old_build_id:  # 通过是入参中是否传老版本id判断是修改还是新增
 		# 获取入参的版本信息
 		update_build_schema = para_deliver2build_schema(deliver_info)
+		update_build_schema.name = deliver_info.new_build_name
+		update_build_schema.desc = deliver_info.desc
+		update_build_schema.scmPath = deliver_info.scmPath
+		update_build_schema.filePath = deliver_info.filePath
 		update(update_build_schema, BuildModel)
 		build_handle_flag = True
 		build_handle_message = "版本修改成功"

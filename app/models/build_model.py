@@ -86,5 +86,5 @@ def get_latest_max_id():
 
 
 if __name__ == "__main__":
-	pass
-
+	l = query_multiple_condition({'product': 21, 'project': 62, 'name': '1.0.1.36'})
+	print(l)

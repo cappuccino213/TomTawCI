@@ -13,20 +13,39 @@ from app.schemas import product_schemas
 
 # 查询具体对照
 def query_ppm(pp_dict: dict):
+	# base_sql = """SELECT
+	# 	product AS product_id,
+	# 	pd.`name` AS product_name,
+	# 	project AS project_id,
+	# 	pj.`name` AS project_name,
+	# 	pj.PM as project_owner
+	# FROM
+	# 	zt_projectproduct pp
+	# 	LEFT JOIN zt_product pd ON pp.product = pd.id
+	# 	LEFT JOIN zt_project pj ON pp.project = pj.id
+	# WHERE
+	# 	pd.deleted = '0'
+	# 	AND pj.status != 'closed'
+	# 	AND pj.deleted = '0'"""
+
 	base_sql = """SELECT
-		product AS product_id,
-		pd.`name` AS product_name,
-		project AS project_id,
-		pj.`name` AS project_name,
-		pj.PM as project_owner
-	FROM
-		zt_projectproduct pp
-		LEFT JOIN zt_product pd ON pp.product = pd.id
-		LEFT JOIN zt_project pj ON pp.project = pj.id 
-	WHERE
-		pd.deleted = '0'
-		AND pj.status != 'closed' 
-		AND pj.deleted = '0'"""
+	count( pj.`name` ),
+	product AS product_id,
+	pd.`name` AS product_name,
+	project AS project_id,
+	pj.`name` AS project_name,
+	pj.PM AS project_owner,
+	zt.account AS members 
+FROM
+	zt_projectproduct pp
+	LEFT JOIN zt_product pd ON pp.product = pd.id
+	LEFT JOIN zt_project pj ON pp.project = pj.id
+	LEFT JOIN zt_team zt ON pp.project = zt.root 
+WHERE
+	pd.deleted = '0' 
+	AND pj.STATUS != 'closed' 
+	AND pj.deleted = '0'  
+"""  # 增加团队成员也可以获取项目详情
 	extra_sql = ''
 	if pp_dict['product_id']:
 		extra_sql += " AND product={}".format(pp_dict['product_id'])
@@ -37,7 +56,8 @@ def query_ppm(pp_dict: dict):
 	if pp_dict['project_name']:
 		extra_sql += " AND pj.`name`='{}'".format(pp_dict['project_name'])
 	if pp_dict['project_owner']:
-		extra_sql += " AND pj.PM='{}'".format(pp_dict['project_owner'])
+		extra_sql += " AND (pj.PM='{0}' OR zt.`account`='{0}')".format(pp_dict['project_owner'])
+	extra_sql += "GROUP BY pj.`name`"  # 去重owner和member的值相同是or造成的重复值
 	return execute_sql(base_sql + extra_sql)
 
 
@@ -55,5 +75,6 @@ async def product_project_mapping(ppm: product_schemas.ProductProjectMapping):  
 
 if __name__ == "__main__":
 	# pass
-	pp = {"product_id": "", "product_name": "", "project_id": "", "project_name": "医学影像浏览器维护2021"}
-	print(query_ppm(pp))
+	# pp = {"product_id": "", "product_name": "", "project_id": "", "project_name": "医学影像浏览器维护2021"}
+	# print(query_ppm(pp))
+	print(" AND pj.PM='{0}' OR zt.`account`='{0}'".format('wangjing'))

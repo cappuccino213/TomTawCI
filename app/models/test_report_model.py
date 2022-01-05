@@ -116,6 +116,6 @@ def remove(report_id: int):
 if __name__ == "__main__":
 	# print(get_by_id(325)['deleted'])
 	# t = test_report_schemas.TestReportDel(id=556, deleted="1")
-	from app.db.database import remove
-
-	remove(555, TestReportModel)
+	# from app.db.database import remove
+	# remove(555, TestReportModel)
+	pass

@@ -50,7 +50,8 @@ MAIL_CONFIG = {
 LOG_CONFIG = {
 	'IF_DEBUG': True,
 	'LOG_PATH': Path.home().joinpath(ROOT_DIRECTORY, f'log\\{time.strftime("%Y%m%d")}.log'),
-	'ROTATION': '8:00',  # 每个日志多大
+	# 'ROTATION': '8:00',  # 每个日志多大
+	'ROTATION': '10 MB',  # 每个日志多大
 	'RETENTION': '10 days'  # 保留时长
 }
 # logger.add("file_1.log", rotation="500 MB")  # 自动循环过大的文件

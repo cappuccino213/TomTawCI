@@ -86,4 +86,8 @@ class AutoTestReport(BaseModel):
 
 
 if __name__ == "__main__":
-	pass
+	trl = AutoTestReport(task_id=656, test_time='', test_url='', test_client='', test_tool='',
+						 test_content='1.修复上个版本的bug',
+						 risk_evaluation='', summary='')
+
+	print(trl.dict())

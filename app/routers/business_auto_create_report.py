@@ -156,10 +156,10 @@ async def generate_report_in_batches(task_para_list: list[test_report_schemas.Au
 		db_test_report_list.append(TestReportModel(report_schemas.dict()))
 	create_all(db_test_report_list)
 	task_id_list = [task.task_id for task in task_para_list]  # 提取请求的测试单id列表
-	test_report_list = [test_report.to_dict() for test_report in db_test_report_list]  # 提取生成报告单的列表
+	test_report_list = [test_report.id for test_report in db_test_report_list]  # 提取生成报告单的列表,报告单id列表
 	# 根据请求插入的记录的list长度比较，判断是否全部插入
 	if len(test_report_list) == len(task_id_list):
-		return response_code.resp_200(test_report_list, message='测试单{}的报告全部生成成功'.format(task_id_list))
+		return response_code.resp_200(test_report_list, message='测试单{}的报告全部生成成功'.format(task_id_list))  # 返回报告单id
 	else:
 		return response_code.resp_400(message='测试报告未能全部生成，成功的测试单有{}'.format(task_id_list))
 

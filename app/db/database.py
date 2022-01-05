@@ -47,7 +47,7 @@ def get(primary_id: int, models: Base):
 	:return:
 	"""
 	try:
-		logging.info('获取成功')
+		# logging.info('获取成功')
 		return Session.query(models).filter(models.id == primary_id).first()
 	except Exception as e:
 		logging.error(str(e))
@@ -91,7 +91,6 @@ def create_all(schemas):
 	finally:
 		Session.close()
 
-
 # 更新
 def update(schema, models: Base):
 	"""
@@ -101,14 +100,15 @@ def update(schema, models: Base):
 	:return:
 	"""
 	update_column = get(schema.id, models)
+	get_column = update_column.to_dict()
 	if update_column:  # 判断被修改的数据是否存在
 		update_dict = schema.dict()  # 将查询到的列记录转成dict类型
 		try:  # 使用遍历k,v方式对应赋值
 			for k, v in update_dict.items():
-				setattr(update_column, k, v)  # setattr给对象的属性赋值 https://www.runoob.com/python/python-func-setattr.html
+				if get_column.get(k) != v:  # 判断是传入的值与原始值是否一样，不一样则更新
+					Session.query(models).filter(models.id == schema.id).update({k: v})
 			Session.commit()  # 提交修改
 			Session.flush()
-			Session.refresh(update_column)
 			return update_column
 		except Exception as e:
 			logging.error(str(e))
@@ -149,6 +149,15 @@ def execute_sql(statement):
 
 
 if __name__ == "__main__":
-	from app.models import release_model
+	from app.models import build_model
+	# from app.models import release_model
+	from datetime import datetime
+	from app.schemas.build_schemas import Build
 
-	print(get(666, release_model.ReleaseModel))
+	d = {'id': 643, 'name': '1.0.1.4', 'branch': 0, 'product': 21, 'project': 62,
+		 'scmPath': r'\\192.168.1.19\delivery\eWordERS\1.0.1.36.20211230',
+		 'filePath': r'\\192.168.1.19\delivery\eWordERS\1.0.1.36.20211230', 'date': '2021-12-30', 'stories': '',
+		 'bugs': '', 'builder': 'wangj1', 'desc': 'ceshi1', 'deleted': '0'}
+	b = Build(**d)
+	update(b, build_model.BuildModel)
+# print(get(673, build_model.BuildModel).to_dict())
