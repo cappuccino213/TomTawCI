@@ -27,7 +27,7 @@ async def get_build_info(build_id: int):
 
 @router.post("/query", name="查询版本信息")
 async def query_build(param: build_schemas.QueryBuild):
-	build_info = query_multiple_condition(param.dict())
+	build_info = query_build_multiple_condition(param.dict())
 	if build_info:
 		return response_code.resp_200(build_info)
 	else:

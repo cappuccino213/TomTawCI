@@ -6,7 +6,6 @@
 """
 from sqlalchemy import Column, Integer, Date, DateTime, Enum, String, Text
 from app.db.database import Base
-from app.utils.custom_log import *
 
 
 class TestReportModel(Base):

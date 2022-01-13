@@ -23,7 +23,7 @@ class CreateRelease(BaseModel):
 	ChangeLog_url: str  # changelog链接
 	update_note: str  # 更新说明
 	attention: str  # 注意事项
-	release_link: str  # 发布链接
+	release_link: str = ''  # 发布链接
 	# members: str  # 相关人员
 	members: list[dict]  # 相关人员
 	releaser: str  # 发布人

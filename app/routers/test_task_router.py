@@ -40,7 +40,7 @@ async def test_task_create(test_task: test_task_schemas.TestTask):
 
 @router.post("/get-without-report", name="获取无测试报告的测试单列表")
 async def no_report_task_multiple_query(test_task_condition: test_task_schemas.TestTaskWithoutReport):
-	task_list = query_multiple_condition(test_task_condition.dict())
+	task_list = query_task_multiple_condition(test_task_condition.dict())
 	if task_list:
 		return response_code.resp_200(task_list)
 	else:

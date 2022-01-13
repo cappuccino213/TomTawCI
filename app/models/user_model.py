@@ -108,5 +108,6 @@ def get_user_email(condition: dict) -> list[tuple]:
 
 
 if __name__ == "__main__":
-	print(get_user_email({'dept': 5, 'account': ['hmc', 'gjh']}))
-	print(get_user_email({'dept': 5, 'account': [], 'realname': '费鑫'}))
+	gue = get_user_email({'dept': 5, 'account': ['hmc', 'gjh']})
+	print(type(gue[0]))
+	# print(get_user_email({'dept': 5, 'account': [], 'realname': '费鑫'}))

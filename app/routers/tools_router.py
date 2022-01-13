@@ -29,13 +29,15 @@ def package(src_dir_path: str, dst_file_path: str, password='TomTaw@HZ'):
 """邮件通知规则"""
 
 
-def email_notice_rule(notice_type: str, business_id: int, server_account: str, server_password: str):
+def email_notice_rule(notice_type: str, business_id: int, server_account: str, server_password: str,
+					  email_accounts: list[str]):
 	"""
 	根据不同的通知类型notice_type，用business_id去获取邮件信息
 	:param notice_type: test_report,test_task,release
 	:param business_id: 测试报告id，测试id，发布单id
 	:param server_password: 邮件服务器密码
 	:param server_account: 邮件服务账号
+	:param email_accounts: 手动发送发送人禅道账号
 	:return: z_mail函数需要的信息参数dict形式
 	"""
 	email_server = dict(account=server_account, password=server_password)
@@ -67,16 +69,28 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 		# 根据release_id获取release信息
 		db_release = get(business_id, release_model.ReleaseModel)
 		email_struct = dict(subject='【版本发布】 {}'.format(db_release.name), content_html=db_release.desc)
-		# 获取工程师邮件
+		# 获取工程师地址
 		email_to = user_model.get_user_email(dict(dept=5))
 		# 获取相关人员邮箱
-		db_build = build_model.query_multiple_condition(dict(id=db_release.build))[0]
+		db_build = build_model.query_build_multiple_condition(dict(id=db_release.build))[0]
 		team_infos = team_model.get_team_info(db_build.project)
 		email_cc = [(team['name'], team['email']) for team in team_infos]
-		# 测试数据
-		# email_to = user_model.get_user_email(dict(dept=4, account='zhangl'))  # 测试数据
-		# email_cc = [('九层风', '541159401@qq.com')]
-		# TODO 需要新增一个参数判断是否手动通知即自己传邮箱的方式，ci客户端可表现为选择某一个用户
+	# 测试数据
+	# email_to = user_model.get_user_email(dict(dept=4, account='zhangl'))  # 测试数据
+	# email_cc = [('九层风', '541159401@qq.com')]
+
+	# 是否手动通知即自己传邮箱的方式，ci客户端可表现为选择某一个用户
+	elif notice_type == 'release_manual':
+		db_release = get(business_id, release_model.ReleaseModel)
+		email_struct = dict(subject='【版本发布】 {}'.format(db_release.name), content_html=db_release.desc)
+		# 获取OEM工程师邮件
+		if email_accounts:  # 防止没有传账号时，发送给所有人
+			email_to = user_model.get_user_email(dict(account=email_accounts))
+		# 获取相关人员邮箱
+		db_build = build_model.query_build_multiple_condition(dict(id=db_release.build))[0]
+		team_infos = team_model.get_team_info(db_build.project)
+		email_cc = [(team['name'], team['email']) for team in team_infos]
+	# email_cc = [("张烨平", "1483029082@qq.com")]
 
 	return dict(mail_struct=email_struct, mail_server=email_server, mail_to=email_to, mail_cc=email_cc)
 
@@ -85,7 +99,7 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 async def email(param: tools_schemas.EmailNotice):
 	try:
 		email_info = email_notice_rule(param.notice_type, param.business_id, param.server_account,
-									   param.server_password)
+									   param.server_password, param.email_to)
 		z_mail(email_info['mail_struct'], email_info['mail_server'], email_info['mail_to'], email_info['mail_cc'])
 		return resp_200(dict(), message="邮件通知成功")
 	except Exception as e:

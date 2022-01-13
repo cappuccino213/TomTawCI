@@ -60,7 +60,7 @@ def query_by_project(project_id: int):
 
 
 # 多条件查询版本信息
-def query_multiple_condition(condition: dict):
+def query_build_multiple_condition(condition: dict):
 	try:
 		result = Session.query(BuildModel).filter(BuildModel.deleted == '0')
 		if condition.get('id'):
@@ -86,5 +86,5 @@ def get_latest_max_id():
 
 
 if __name__ == "__main__":
-	l = query_multiple_condition({'product': 21, 'project': 62, 'name': '1.0.1.36'})
+	l = query_build_multiple_condition({'product': 7, 'project': 66, 'name': 'v1.1.1.1261'})[0].id
 	print(l)

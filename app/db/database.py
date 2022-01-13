@@ -47,7 +47,6 @@ def get(primary_id: int, models: Base):
 	:return:
 	"""
 	try:
-		# logging.info('获取成功')
 		return Session.query(models).filter(models.id == primary_id).first()
 	except Exception as e:
 		logging.error(str(e))
@@ -56,15 +55,16 @@ def get(primary_id: int, models: Base):
 
 
 # 新增
-def create(schema):
+def create(db_model):
 	"""
-	:param schema: schemas定义的类
+	:param db_model: db的model对象的实例
 	:return:
 	"""
 	try:
-		Session.add(schema)
+		Session.add(db_model)
 		Session.commit()
-		Session.refresh(schema)
+		Session.refresh(db_model)  # 为了读取自增字段(如果有的话)到对象
+		Session.expunge(db_model)
 	except Exception as e:
 		logging.error(str(e))
 		Session.rollback()
@@ -74,22 +74,25 @@ def create(schema):
 
 
 # 批量新增
-def create_all(schemas):
+def create_all(db_model_list):
 	"""
 	可以批量insert数据
-	:param schemas: list(schema)
+	:param db_model_list: list(db_model)
 	:return:
 	"""
 	try:
-		Session.add_all(schemas)
+		Session.add_all(db_model_list)
 		Session.commit()
-		Session.refresh(schemas)
+		for db_model in db_model_list:
+			Session.refresh(db_model)
+			Session.expunge(db_model)
 	except Exception as e:
 		logging.error(str(e))
 		Session.rollback()
 		Session.flush()
 	finally:
 		Session.close()
+
 
 # 更新
 def update(schema, models: Base):

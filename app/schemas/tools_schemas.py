@@ -5,8 +5,9 @@
 @Contact : yeahcheung213@163.com
 """
 # 关于工具的schema
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from enum import Enum
+from typing import Optional, List
 
 
 # 打包入参，将文件包压缩放到指定的位置
@@ -28,6 +29,7 @@ class EmailType(str, Enum):
 	test_task = 'test_task'
 	test_report = 'test_report'
 	release = 'release'
+	release_manual = 'release_manual'  # 发布单手动填写发布人员
 
 
 # 邮件通知入参
@@ -36,7 +38,22 @@ class EmailNotice(BaseModel):
 	business_id: int
 	server_account: EmailStr
 	server_password: str
+	email_to: Optional[List[str]]
+
+	# 参数校验，当notice_type的值未release_manual时，需要传email_to
+	# @validator('email_to')
+	# def email_to_rule(cls):
+	# 	if 'notice_type' == 'release_manual':
+	# 		if not 'email_to':
+	# 			raise ValueError("'when notice_type is release_manual,email_to must be a list,like ['zyp','zhangl']'")
+	# 		else:
+	# 			return True
 
 
 if __name__ == "__main__":
 	pass
+	en = EmailNotice(notice_type='release_manual', business_id=1, server_account='1661886732@qq.com',
+					 server_password='xxx',
+					 # email_to=[('方敏芳', '1661886732@qq.com'), ('钱迁', '360309531@qq.com')])
+					 email_to=['zyp', 'fmf'])
+	print(en.json())

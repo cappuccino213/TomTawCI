@@ -10,7 +10,7 @@ from app.config import ROOT_DIRECTORY, AUTO_DISTRIBUTE
 from app.utils import html2string, response_code
 from datetime import date
 from app.models.release_model import ReleaseModel
-from app.models.build_model import query_multiple_condition
+from app.models.build_model import query_build_multiple_condition
 from app.db.database import *
 from app.config import AUTO_DISTRIBUTE
 import os
@@ -59,12 +59,13 @@ async def auto_distribute(release_info: release_schemas.CreateRelease):
 	create(db_release)
 	# 获取递交路径、打包路径，作为返参用
 	build_param = dict(name=release_info.build_name, product=release_info.product, project=release_info.project)
-	src_dir_path = query_multiple_condition(build_param)[0].filePath  # 如果获取到结果为空这里就会报错
+	src_dir_path = query_build_multiple_condition(build_param)[0].filePath  # 如果获取到结果为空这里就会报错
 	dst_file_path = os.path.join(AUTO_DISTRIBUTE['COMPRESS_PATH'],
 								 release_info.product_name, '{}.7z'.format(release_dict['name']))
 	compress_info = dict(src_dir_path=src_dir_path, dst_file_path=dst_file_path)
 	if db_release.id:  # 根据有没有生成新的id判断是否插入成功
-		return response_code.resp_200({'release': db_release.to_dict(), 'compress_info': compress_info})
+		# return response_code.resp_200({'release': db_release.to_dict(), 'compress_info': compress_info})
+		return response_code.resp_200({'release': db_release.id, 'compress_info': compress_info})  # 返回发布单id
 	else:
 		return response_code.resp_400(message="发布单创建失败")
 

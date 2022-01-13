@@ -25,6 +25,7 @@ class Deliver(BaseModel):
 	if_smoke: str
 	man_time: str
 	owner: str
+	pri: int
 	mailto: str
 	test_type: str
 	test_suggest: str
@@ -72,6 +73,7 @@ class Deliver(BaseModel):
 				"filePath": "\\\\192.168.1.19\\delivery\\eWordRIS\\V2.2.0.4286.20211117",
 				"build_date": "",
 				"owner": "zyp",
+				"pri": 2,
 				"mailto": ",zyp,zhangl(多个用户用,隔开，首个字符也是,)",
 				"test_type": "功能/接口/BUG回归等",
 				"test_suggest": "测试建议(1、参考文档2、注意事项3、测试着重点 等其他说明)",

@@ -86,11 +86,32 @@ def get_build_details(task_id):
 		Session.close()
 
 
+# 单条件查询测试单
+def query_testtask(condition: dict):
+	try:
+		result = Session.query(TestTaskModel)
+		if condition.get('id'):
+			result = result.filter(TestTaskModel.id == condition.get('id'))
+		if condition.get('product'):
+			result = result.filter(TestTaskModel.product == condition.get('product'))
+		if condition.get('project'):
+			result = result.filter(TestTaskModel.project == condition.get('project'))
+		if condition.get('owner'):
+			result = result.filter(TestTaskModel.owner == condition.get('owner'))
+		if condition.get('build'):
+			result = result.filter(TestTaskModel.build == condition.get('build'))
+		return result.filter(TestTaskModel.deleted == '0').first()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
+
+
 """TestTaskWithoutReport"""
 
 
 # 单条件查询
-def query_single_condition(condition: dict):
+def query_task_single_condition(condition: dict):
 	try:
 		result = Session.query(TestTaskWithoutReport)
 		if condition.get('id') != 0:
@@ -101,6 +122,8 @@ def query_single_condition(condition: dict):
 			result = result.filter(TestTaskWithoutReport.project == condition.get('project'))
 		if condition.get('owner') != '':
 			result = result.filter(TestTaskWithoutReport.owner == condition.get('owner'))
+		if condition.get('build') != '':
+			result = result.filter(TestTaskWithoutReport.build == condition.get('build'))
 		return result.all()
 	except Exception as e:
 		logging.error(str(e))
@@ -109,7 +132,7 @@ def query_single_condition(condition: dict):
 
 
 # 多条件查询
-def query_multiple_condition(condition: dict):
+def query_task_multiple_condition(condition: dict):
 	try:
 		result = Session.query(TestTaskWithoutReport)
 		if len(condition.get('id')):
@@ -137,6 +160,7 @@ if __name__ == "__main__":
 		"project": [0],
 		"owner": ""
 	}
-	# print(query_single_condition(c))
+	# print(query_multiple_condition(c)[0].to_dict())
 
-	print(query_multiple_condition(c)[0].to_dict())
+	d = dict(build=677)
+	print(query_testtask(d).id)
