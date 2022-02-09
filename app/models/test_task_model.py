@@ -24,6 +24,7 @@ class TestTaskModel(Base):
 	begin = Column(Date, default=date.today())
 	end = Column(Date, default=date.today())
 	mailto = Column(Text)
+
 	desc = Column(Text)
 	report = Column(Text, default='CI系统自动生成')  # 数据库中为非空字段给个默认值
 	auto = Column(String(10), default='no')

@@ -52,5 +52,16 @@ def resp_404(data: str = None, message: str = "NOT FOUND") -> Response:
 	)
 
 
+def resp_500(data: str = None, message: Union[list, dict, str] = "Server Internal Error") -> Response:
+	return JSONResponse(
+		status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+		content={
+			'code': "500",
+			'message': message,
+			'data': data,
+		}
+	)
+
+
 if __name__ == "__main__":
 	pass

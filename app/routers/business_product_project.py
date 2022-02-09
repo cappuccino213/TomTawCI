@@ -32,6 +32,7 @@ def query_ppm(pp_dict: dict):
 	count( pj.`name` ),
 	product AS product_id,
 	pd.`name` AS product_name,
+	pd.`code` AS product_code,
 	project AS project_id,
 	pj.`name` AS project_name,
 	pj.PM AS project_owner,

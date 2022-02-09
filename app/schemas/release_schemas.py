@@ -12,6 +12,7 @@ class CreateRelease(BaseModel):
 	# name: product_name+build_name+发布类型+发布日期
 	product: int
 	product_name: str
+	product_code: str
 	project: int
 	build: int
 	build_name: str
@@ -35,6 +36,7 @@ class CreateRelease(BaseModel):
 			"example": {
 				"product": 7,
 				"product_name": "产品名称",
+				"product_code": "产品代码",
 				"project": 66,
 				"build": 642,
 				"build_name": "V2.2.0.4083",

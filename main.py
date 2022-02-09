@@ -16,14 +16,16 @@ from app.routers import (
 	business_auto_create_report,
 	business_product_project,
 	business_auto_distribute,
-	tools_router)
+	tools_router,
+	CD_server_router)
 from starlette.responses import RedirectResponse
 from app.config import RUN_CONFIGURE
-import uvicorn
-
 from app.utils.log_handle import *
 from app.config import LOG_CONFIG
+from pathlib import Path
+import uvicorn
 import sys
+import os
 
 
 # 引入日志模块
@@ -62,6 +64,9 @@ app.include_router(business_auto_distribute.router)
 # 工具
 app.include_router(tools_router.router)
 
+# CD服务端
+app.include_router(CD_server_router.router)
+
 
 @app.get("/", name="WelCome to CIAPI!")
 # 将根路径重定向到swagger文档
@@ -71,6 +76,8 @@ async def root():
 
 
 if __name__ == "__main__":
+	root_path = Path(__file__).parent  # 获取当前文件的父路径
+	os.chdir(root_path)  # 切换程序运行目录
 	# 脚本启动
 	uvicorn.run(app='main:app', host="0.0.0.0", port=RUN_CONFIGURE['PORT'], reload=RUN_CONFIGURE['RELOAD'],
 				debug=RUN_CONFIGURE['DEBUG'], workers=RUN_CONFIGURE['WORKERS'])

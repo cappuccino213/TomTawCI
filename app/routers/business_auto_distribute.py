@@ -47,7 +47,7 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 	# 描述转化成html
 	desc = html2string.release_html2string(RELEASE_TEMPLATE_PATH, desc_dict)
 	return dict(product=param_dict['product'], build=param_dict['build'],
-				name='{} {}'.format(param_dict['product_name'], desc_dict['releaseBuild']), marker=param_dict['marker'],
+				name='{} {}'.format(param_dict['product_code'], desc_dict['releaseBuild']), marker=param_dict['marker'],
 				date=date.today(), desc=desc)
 
 

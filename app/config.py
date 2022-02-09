@@ -6,6 +6,7 @@
 """
 
 from pathlib import Path
+# from utils.json_rw import read_json
 import time
 
 """数据库配置"""
@@ -37,6 +38,9 @@ AUTO_DISTRIBUTE = {
 
 }
 """CD相关配置"""
+# CD客户端参数（用于CD客户端信息的全局缓存，避免文件读取IO的问题）
+
+# CD_CLIENT_INFO = read_json('./static/CDClientInfo.json')
 
 """工具类配置"""
 # 邮件配置 用的z_mail暂时不需要这个配置
@@ -68,5 +72,5 @@ RUN_CONFIGURE = {
 
 # 更多参数详见\TomTawCI\venv\Lib\site-packages\uvicorn\main.py
 if __name__ == "__main__":
-	print(LOG_CONFIG)
-# print(ROOT_DIRECTORY1)
+	# print(LOG_CONFIG)
+	pass
