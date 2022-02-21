@@ -73,7 +73,7 @@ def query_build_multiple_condition(condition: dict):
 			result = result.filter(BuildModel.name == condition.get('name'))
 		if condition.get('date'):
 			result = result.filter(BuildModel.gender == condition.get('date'))
-		return result.all()
+		return result.order_by(desc(BuildModel.id)).all()
 	except Exception as e:
 		logging.error(str(e))
 	finally:

@@ -38,4 +38,5 @@ def read_json(json_file='../static/CDClientInfo.json'):
 if __name__ == "__main__":
 	# read_json('CDClientInfo.json')
 	# write_json('../static/CDClientInfo.json', [{'hostname': 'DESKTOP-L7R9KAB', 'ip': '192.168.1.56', 'desc': '本地测试机1'}])
-	pass
+	print(read_json())
+	print(type(read_json()))

@@ -6,7 +6,6 @@
 """
 
 from pathlib import Path
-# from utils.json_rw import read_json
 import time
 
 """数据库配置"""

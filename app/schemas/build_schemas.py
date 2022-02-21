@@ -48,9 +48,9 @@ class QueryBuild(BaseModel):
 	class Config:
 		schema_extra = {
 			"example": {
-				"name": "v1.1.1.1232",
+				"name": "V2.2.1.4371",
 				"product": 7,
-				"project": 66
+				"project": 99
 			}
 		}
 

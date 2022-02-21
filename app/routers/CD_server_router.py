@@ -13,15 +13,16 @@ CD_CLIENT_INFO = json_rw.read_json()
 
 
 # 检测CD客户端是否在线
-def check_if_online(url):
+def check_if_online(client_ip: str, client_port: int):
 	try:
-		res = get('http://{}:8888/ewordcd/check'.format(url), timeout=0.5)  # 加个超时时间，当超过500ms就认为链接客户端CD接口失败
+		res = get('http://{0}:{1}/ewordcd/check'.format(client_ip, client_port),
+				  timeout=0.5)  # 加个超时时间，当超过500ms就认为链接客户端CD接口失败
 		status_code = res.status_code
 		if status_code == 200:
-			custom_log.logging.info("检测{0}:8888的状态为{1}".format(url, status_code))
+			custom_log.logging.info("检测{0}:{1}的状态为{2}".format(client_ip, client_port, status_code))
 			return True
 		else:
-			custom_log.logging.info("检测{0}:8888的状态为{1}".format(url, status_code))
+			custom_log.logging.info("检测{0}:{1}的状态为{2}".format(client_ip, client_port, status_code))
 			return False
 	except Exception as e:
 		custom_log.logging.error(str(e))
@@ -44,15 +45,21 @@ async def register(rg_para: CD_schemas.CDRegister):
 			json_rw.write_json(CD_CLIENT_INFO)
 			custom_log.logging.info("注册成功{}".format(CD_CLIENT_INFO))
 			return response_code.resp_200({}, message="注册成功{}".format(rg_para_dict))
-		# 读取内容判断是否已经存在相同客户端ip
-		elif rg_para_dict['ip'] not in [item.get('ip') for item in CD_CLIENT_INFO]:
+		# 读取内容判断是否已经存在相同客户端ip+port,没有则追加
+		elif (rg_para_dict['ip'], rg_para_dict['port']) not in [(item.get('ip'), item.get('port')) for item in
+																CD_CLIENT_INFO]:
 			CD_CLIENT_INFO.append(rg_para_dict)
 			json_rw.write_json(CD_CLIENT_INFO)
 			custom_log.logging.info("注册成功{}".format(rg_para_dict))
 			return response_code.resp_200({}, message="注册成功{}".format(rg_para_dict))
-		else:
-			custom_log.logging.info("已存在相同ip的客户端")
-			return response_code.resp_204(message="已存在相同ip的客户端")
+		else:  # 存在相同的客户端ip+port,注册时将在线标记标记成true
+			for item in CD_CLIENT_INFO:
+				if (rg_para_dict['ip'], rg_para_dict['port']) == (item.get('ip'), item.get('port')):
+					item['online'] = True
+					json_rw.write_json(CD_CLIENT_INFO)
+					break
+			custom_log.logging.info("相同客户端已注册，激活在线标记")
+			return response_code.resp_200({}, message="相同客户端已注册，激活在线标记")
 	except Exception as e:
 		custom_log.logging.error(str(e))
 		return response_code.resp_500(message=str(e))
@@ -64,7 +71,8 @@ async def get_cd_clients_info():
 	try:
 		if CD_CLIENT_INFO:
 			for info in CD_CLIENT_INFO:
-				info['online'] = check_if_online(info['ip'])
+				info['online'] = check_if_online(info['ip'], info['port'])
+		json_rw.write_json(CD_CLIENT_INFO)  # 检测后更新注册信息
 		return response_code.resp_200(CD_CLIENT_INFO)
 	except Exception as e:
 		custom_log.logging.error(str(e))
@@ -73,7 +81,7 @@ async def get_cd_clients_info():
 
 # 修改注册信息
 @router.post("/update-cd-clients", name="修改注册信息")
-async def get_cd_clients_info(client_infos: list[dict]):
+async def update_cd_clients_info(client_infos: list[dict]):
 	global CD_CLIENT_INFO
 	try:
 		json_rw.write_json(client_infos)
@@ -85,15 +93,36 @@ async def get_cd_clients_info(client_infos: list[dict]):
 		return response_code.resp_500(message=str(e))
 
 
-# 更新程序
-@router.post("/application/upgrade", name="更新程序")
-async def application_upgrade(upgrade_para: CD_schemas.AppUpgrade):
+# 部署程序
+@router.post("/application/deploy", name="部署程序")
+def application_deploy(app_deploy: CD_schemas.AppDeploy):
 	if CD_CLIENT_INFO:
 		# 判断对应的服务器上是否注册和安装了CD客户端
 		check_li = [(client['ip'], client['online']) for client in CD_CLIENT_INFO]
-		if (upgrade_para.CD_url, True) in check_li:
+		if (str(app_deploy.cd_client.ip), True) in check_li:
 			try:
-				post(url='http://{0}:8888/ewordcd/application/upgrade'.format(upgrade_para.CD_url),
+				post(url='http://{0}:{1}/ewordcd/application/deploy'.format(app_deploy.cd_client.ip,
+																			app_deploy.cd_client.port),
+					 json=app_deploy.deploy_para.dict())
+				return response_code.resp_200({})
+			except Exception as e:
+				return response_code.resp_500(str(e))
+		else:
+			return response_code.resp_204(message="该CD客户端未注册或已离线")
+	else:
+		return response_code.resp_204(message="无注册的CD客户端")
+
+
+# 更新程序
+@router.post("/application/upgrade", name="更新程序")
+def application_upgrade(upgrade_para: CD_schemas.AppUpgrade):
+	if CD_CLIENT_INFO:
+		# 判断对应的服务器上是否注册和安装了CD客户端
+		check_li = [(client['ip'], client['online']) for client in CD_CLIENT_INFO]
+		if (str(upgrade_para.cd_client.ip), True) in check_li:
+			try:
+				post(url='http://{0}:{1}/ewordcd/application/upgrade'.format(upgrade_para.cd_client.ip,
+																			 upgrade_para.cd_client.port),
 					 json=upgrade_para.app_para.dict())
 				return response_code.resp_200({})
 			except Exception as e:
@@ -106,9 +135,10 @@ async def application_upgrade(upgrade_para: CD_schemas.AppUpgrade):
 
 # 获取tomtaw服务列表
 @router.post("/find_tomtaw_services", name="查找公司的服务信息")
-async def find_tomtaw_services(ip_address: CD_schemas.CDClientIP):
+async def find_tomtaw_services(client_info: CD_schemas.CDClient):
 	try:
-		res = get(url='http://{0}:8888/ewordcd/tools/find_tomtaw_services'.format(ip_address.ip), params=None)
+		res = get(url='http://{0}:{1}/ewordcd/tools/find_tomtaw_services'.format(client_info.ip, client_info.port),
+				  params=None)
 		if res.json():
 			return response_code.resp_200(res.json()['data'])
 		else:
@@ -121,7 +151,8 @@ async def find_tomtaw_services(ip_address: CD_schemas.CDClientIP):
 @router.post("/get_service_info", name="根据服务名获取服务信息")
 async def get_service_info(service_query: CD_schemas.ServiceQuery):
 	try:
-		res = get(url='http://{0}:8888/ewordcd/tools/get_service_info'.format(service_query.ip),
+		res = get(url='http://{0}:{1}/ewordcd/tools/get_service_info'.format(service_query.cd_client.ip,
+																			 service_query.cd_client.port),
 				  params={'service_name': service_query.service_name})
 		if res.json():
 			return response_code.resp_200(res.json()['data'])
@@ -135,7 +166,8 @@ async def get_service_info(service_query: CD_schemas.ServiceQuery):
 @router.post("/service_operation", name="服务操作")
 async def service_operation(operation_param: CD_schemas.ServiceOperation):
 	try:
-		res = post(url='http://{0}:8888/ewordcd/tools/service_operation'.format(operation_param.ip),
+		res = post(url='http://{0}:{1}/ewordcd/tools/service_operation'.format(operation_param.cd_client.ip,
+																			   operation_param.cd_client.port),
 				   json={'operation': operation_param.operation, 'service_name': operation_param.service_name})
 		if res.json():
 			return response_code.resp_200(res.json()['data'])
@@ -145,8 +177,51 @@ async def service_operation(operation_param: CD_schemas.ServiceOperation):
 		return response_code.resp_500(str(e))
 
 
-# 安装程序
+# 找查找配置文件
+@router.post("/find_config_files", name="查找配置文件")
+async def find_configs(config_param: CD_schemas.ConfigFiles):
+	try:
+		res = get(url='http://{0}:{1}/ewordcd/tools/find_config_files?directory={2}'.format(config_param.cd_client.ip,
+																							config_param.cd_client.port,
+																							config_param.directory))
+		if res.json():
+			return response_code.resp_200(res.json()['data'])
+		else:
+			return response_code.resp_204()
+	except Exception as e:
+		return response_code.resp_500(str(e))
+
+
+# 读取文件
+@router.post("/read_file", name="读取文件内容")
+async def read_file_content(read_para: CD_schemas.ReadConfig):
+	try:
+		res = post(
+			url='http://{0}:{1}/ewordcd/tools/read_file'.format(read_para.cd_client.ip, read_para.cd_client.port),
+			json={'config_path': read_para.config_path})
+		if res.json():
+			return response_code.resp_200(res.json()['data'], "读取文件成功")
+		else:
+			return response_code.resp_204()
+	except Exception as e:
+		return response_code.resp_500(message="读取文件失败，原因{}".format(str(e)))
+
+
+# 修改文件
+@router.post("/write_file", name="写入文件内容")
+async def write_file_content(write_para: CD_schemas.WriteConfig):
+	try:
+		res = post(
+			url='http://{0}:{1}/ewordcd/tools/write_file'.format(write_para.cd_client.ip, write_para.cd_client.port),
+			json={'config_path': write_para.config_path, 'write_content': write_para.write_content})
+		if res.json():
+			return response_code.resp_200({}, message="写入成功")
+		else:
+			return response_code.resp_204()
+	except Exception as e:
+		return response_code.resp_500(message="写入失败，原因{}".format(str(e)))
+
 
 if __name__ == "__main__":
 	# print(CD_CLIENT_INFO)
-	check_if_online('192.168.1.56')
+	check_if_online('192.168.1.56', 8888)

@@ -48,7 +48,7 @@ async def no_report_task_multiple_query(test_task_condition: test_task_schemas.T
 
 
 # 根据测试单获取版本详情
-@router.get("/get-build-info", name="获取无测试报告的测试单列表")
+@router.get("/get-build-info", name="根据测试单获取版本详情")
 async def get_build_details_by_task_id(task_id: int):
 	build_info = get_build_details(task_id)
 	if build_info:
