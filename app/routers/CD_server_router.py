@@ -31,6 +31,8 @@ def check_if_online(client_ip: str, client_port: int):
 
 router = APIRouter(prefix="/ewordci/cd_server", tags=["cd_server"])
 
+"""业务类"""
+
 
 # CD注册接口
 @router.post("/register", name="注册CD客户端")
@@ -101,10 +103,13 @@ def application_deploy(app_deploy: CD_schemas.AppDeploy):
 		check_li = [(client['ip'], client['online']) for client in CD_CLIENT_INFO]
 		if (str(app_deploy.cd_client.ip), True) in check_li:
 			try:
-				post(url='http://{0}:{1}/ewordcd/application/deploy'.format(app_deploy.cd_client.ip,
-																			app_deploy.cd_client.port),
-					 json=app_deploy.deploy_para.dict())
-				return response_code.resp_200({})
+				res = post(url='http://{0}:{1}/ewordcd/application/deploy'.format(app_deploy.cd_client.ip,
+																				  app_deploy.cd_client.port),
+						   json=app_deploy.deploy_para.dict())
+				if res.json()['code'] == 200:
+					return response_code.resp_200({}, message=res.json()['message'])
+				else:
+					return response_code.resp_500(res.json()['message'])
 			except Exception as e:
 				return response_code.resp_500(str(e))
 		else:
@@ -133,13 +138,16 @@ def application_upgrade(upgrade_para: CD_schemas.AppUpgrade):
 		return response_code.resp_204(message="无注册的CD客户端")
 
 
+"""工具类"""
+
+
 # 获取tomtaw服务列表
 @router.post("/find_tomtaw_services", name="查找公司的服务信息")
 async def find_tomtaw_services(client_info: CD_schemas.CDClient):
 	try:
 		res = get(url='http://{0}:{1}/ewordcd/tools/find_tomtaw_services'.format(client_info.ip, client_info.port),
 				  params=None)
-		if res.json():
+		if res.json()['code'] == 200:
 			return response_code.resp_200(res.json()['data'])
 		else:
 			return response_code.resp_204()
@@ -222,6 +230,22 @@ async def write_file_content(write_para: CD_schemas.WriteConfig):
 		return response_code.resp_500(message="写入失败，原因{}".format(str(e)))
 
 
+# 端口号检测
+@router.post("/check_port", name="检测端口号是否可用")
+async def check_port_if_available(port_para: CD_schemas.CheckPort):
+	try:
+		res = get(
+			url='http://{0}:{1}/ewordcd/tools/check_port'.format(port_para.cd_client.ip, port_para.cd_client.port),
+			params={'port': port_para.port})
+		if res.json()['data']:
+			return response_code.resp_200(res.json()['data'], res.json()['message'])
+		else:
+			return response_code.resp_204(res.json()['data'], res.json()['message'])
+	except Exception as e:
+		return response_code.resp_500(message="检测端口号失败，原因{}".format(str(e)))
+
+
 if __name__ == "__main__":
 	# print(CD_CLIENT_INFO)
-	check_if_online('192.168.1.56', 8888)
+	# check_if_online('192.168.1.56', 8888)
+	pass

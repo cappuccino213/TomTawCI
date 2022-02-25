@@ -65,7 +65,7 @@ class CDClient(BaseModel):
 		schema_extra = {
 			"example": {
 				"ip": "192.168.1.18",
-				"port": 8888
+				"port": 8887
 			}
 		}
 
@@ -118,14 +118,13 @@ class ReadConfig(BaseModel):
 
 # 写入的内容
 class WriteConfig(ReadConfig):
-	write_content: Text
+	write_content: str
 
 
 """服务操作参数"""
 
 
 class ServiceQuery(BaseModel):
-	# ip: IPv4Address
 	cd_client: CDClient
 	service_name: str
 
@@ -176,6 +175,11 @@ class ConfigFiles(BaseModel):
 				"directory": r"D:\producttest\eWordRIS\WebSite"
 			}
 		}
+
+
+class CheckPort(BaseModel):
+	cd_client: CDClient
+	port: int
 
 
 if __name__ == "__main__":

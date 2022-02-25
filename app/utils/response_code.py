@@ -24,7 +24,7 @@ def resp_200(data: Union[list, dict, str], message="Success") -> Response:
 
 def resp_204(data: str = None, message: str = "No Content") -> Response:
 	return JSONResponse(
-		status_code=status.HTTP_400_BAD_REQUEST,
+		status_code=status.HTTP_204_NO_CONTENT,
 		content={'code': 204,
 				 'message': message,
 				 'data': jsonable_encoder(data)
