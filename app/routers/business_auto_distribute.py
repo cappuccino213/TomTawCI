@@ -61,7 +61,7 @@ async def auto_distribute(release_info: release_schemas.CreateRelease):
 	build_param = dict(name=release_info.build_name, product=release_info.product, project=release_info.project)
 	src_dir_path = query_build_multiple_condition(build_param)[0].filePath  # 如果获取到结果为空这里就会报错
 	dst_file_path = os.path.join(AUTO_DISTRIBUTE['COMPRESS_PATH'],
-								 release_info.product_name, '{}.7z'.format(release_dict['name']))
+								 release_info.product_code, '{}.7z'.format(release_dict['name']))
 	compress_info = dict(src_dir_path=src_dir_path, dst_file_path=dst_file_path)
 	if db_release.id:  # 根据有没有生成新的id判断是否插入成功
 		# return response_code.resp_200({'release': db_release.to_dict(), 'compress_info': compress_info})

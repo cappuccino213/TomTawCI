@@ -10,8 +10,8 @@ import time
 
 """数据库配置"""
 DATABASE_CONFIGURE = {
-	"SQLALCHEMY_DATABASE_URL": "mysql+pymysql://root:123456@localhost:3306/zentao",  # 链接
-	# "SQLALCHEMY_DATABASE_URL": "mysql+pymysql://test:123456@192.168.1.43:3306/zentao",  # 链接
+	# "SQLALCHEMY_DATABASE_URL": "mysql+pymysql://root:123456@localhost:3306/zentao",  # 链接
+	"SQLALCHEMY_DATABASE_URL": "mysql+pymysql://test:123456@192.168.1.43:3306/zentao",  # 链接
 	"SQL_ECHO": True  # 是否输出执行语句
 }
 

@@ -70,7 +70,7 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 		db_release = get(business_id, release_model.ReleaseModel)
 		email_struct = dict(subject='【版本发布】 {}'.format(db_release.name), content_html=db_release.desc)
 		# 获取工程师地址
-		email_to = user_model.get_user_email(dict(dept=5))
+		email_to = user_model.get_user_email(dict(dept=5))  # 默认发给所有实施工程师
 		# 获取相关人员邮箱
 		db_build = build_model.query_build_multiple_condition(dict(id=db_release.build))[0]
 		team_infos = team_model.get_team_info(db_build.project)
@@ -79,7 +79,7 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 	# email_to = user_model.get_user_email(dict(dept=4, account='zhangl'))  # 测试数据
 	# email_cc = [('九层风', '541159401@qq.com')]
 
-	# 是否手动通知即自己传邮箱的方式，ci客户端可表现为选择某一个用户
+	# 是否手动通知即传邮箱的方式
 	elif notice_type == 'release_manual':
 		db_release = get(business_id, release_model.ReleaseModel)
 		email_struct = dict(subject='【版本发布】 {}'.format(db_release.name), content_html=db_release.desc)
