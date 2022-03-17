@@ -11,6 +11,7 @@ from app.utils import html2string, response_code
 from datetime import date
 from app.models.release_model import ReleaseModel
 from app.models.build_model import query_build_multiple_condition
+from app.models.action_model import *
 from app.db.database import *
 from app.config import AUTO_DISTRIBUTE
 import os
@@ -31,7 +32,7 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 		[member['name'] for member in param_dict['members'] if (member['role'] == '研发主管' and member['name'] != '胡东慧')])
 
 	# 发布描述处理
-	desc_dict = dict(releaseBuild='{}.{}.b{}'.format(param_dict['build_name'], param_dict['release_type'],
+	desc_dict = dict(releaseBuild='{0}.{1}.b{2}'.format(param_dict['build_name'], param_dict['release_type'],
 													 str(date.today()).replace('-', '')),
 					 applyScope=param_dict['apply_scope'],
 					 releaseContent=param_dict['release_content'],
@@ -47,7 +48,7 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 	# 描述转化成html
 	desc = html2string.release_html2string(RELEASE_TEMPLATE_PATH, desc_dict)
 	return dict(product=param_dict['product'], build=param_dict['build'],
-				name='{} {}'.format(param_dict['product_code'], desc_dict['releaseBuild']), marker=param_dict['marker'],
+				name='{0} {1}'.format(param_dict['product_code'], desc_dict['releaseBuild']), marker=param_dict['marker'],
 				date=date.today(), desc=desc)
 
 
@@ -57,6 +58,13 @@ async def auto_distribute(release_info: release_schemas.CreateRelease):
 	db_release = ReleaseModel(release_dict)
 	# 创建发布单
 	create(db_release)
+
+	# 插入操作日志
+	db_action = ActionModel(
+		get_action_dict('release', db_release.id, db_release.product, release_info.project,
+						release_info.releaser, 'opened'))
+	create(db_action)
+
 	# 获取递交路径、打包路径，作为返参用
 	build_param = dict(name=release_info.build_name, product=release_info.product, project=release_info.project)
 	src_dir_path = query_build_multiple_condition(build_param)[0].filePath  # 如果获取到结果为空这里就会报错

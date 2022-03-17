@@ -13,27 +13,12 @@ from app.schemas import product_schemas
 
 # 查询具体对照
 def query_ppm(pp_dict: dict):
-	# base_sql = """SELECT
-	# 	product AS product_id,
-	# 	pd.`name` AS product_name,
-	# 	project AS project_id,
-	# 	pj.`name` AS project_name,
-	# 	pj.PM as project_owner
-	# FROM
-	# 	zt_projectproduct pp
-	# 	LEFT JOIN zt_product pd ON pp.product = pd.id
-	# 	LEFT JOIN zt_project pj ON pp.project = pj.id
-	# WHERE
-	# 	pd.deleted = '0'
-	# 	AND pj.status != 'closed'
-	# 	AND pj.deleted = '0'"""
-
 	base_sql = """SELECT
 	count( pj.`name` ),
-	product AS product_id,
+	pp.product AS product_id,
 	pd.`name` AS product_name,
 	pd.`code` AS product_code,
-	project AS project_id,
+	pp.project AS project_id,
 	pj.`name` AS project_name,
 	pj.PM AS project_owner,
 	zt.account AS members 
@@ -75,7 +60,6 @@ async def product_project_mapping(ppm: product_schemas.ProductProjectMapping):  
 
 
 if __name__ == "__main__":
-	# pass
 	# pp = {"product_id": "", "product_name": "", "project_id": "", "project_name": "医学影像浏览器维护2021"}
 	# print(query_ppm(pp))
 	print(" AND pj.PM='{0}' OR zt.`account`='{0}'".format('wangjing'))

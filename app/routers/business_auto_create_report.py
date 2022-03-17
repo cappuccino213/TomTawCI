@@ -6,10 +6,10 @@
 """
 
 # 根据测试单号自动生成报告
-# import os
 from fastapi import APIRouter
 from app.models.test_task_model import TestTaskModel, get_build_details
 from app.models.test_report_model import TestReportModel
+from app.models.action_model import *
 from app.db.database import *
 from app.models.bug_model import get_testtask_related_bug, get_testtask_bug_statistics, calculate_in_value, \
 	evaluate_grade, release_evaluation
@@ -127,7 +127,6 @@ def generate_report(task_para: dict):
 	report_dict['objectID'] = task['id']
 	report_dict['createdBy'] = task['owner']
 	report_dict['createdDate'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
 	return report_dict
 
 
@@ -140,6 +139,11 @@ async def generate_test_report(task_para: test_report_schemas.AutoTestReport):
 	report_schemas = test_report_schemas.TestReport(**report_dict)  # 传字典schema实例化
 	db_test_report = TestReportModel(report_schemas.dict())  # 实例化数据模型
 	create(db_test_report)  # 调用create插入数据库
+	# 插入操作日志
+	db_action = ActionModel(
+		get_action_dict('testreport', db_test_report.id, db_test_report.product, db_test_report.project,
+						db_test_report.createdBy, 'opened'))
+	create(db_action)
 	if db_test_report.id:  # 根据有没有生成新的id判断是否插入成功
 		return response_code.resp_200(db_test_report.to_dict(),
 									  message='测试单{}的测试报告生成成功'.format(task_para.dict()['task_id']))
@@ -153,13 +157,24 @@ async def generate_report_in_batches(task_para_list: list[test_report_schemas.Au
 	for task_para in task_para_list:
 		report_dict = generate_report(task_para.dict())
 		report_schemas = test_report_schemas.TestReport(**report_dict)
+		# 报告数据list
 		db_test_report_list.append(TestReportModel(report_schemas.dict()))
 	create_all(db_test_report_list)
+
+	# 批量插入操作日志
+	db_action_list = list()
+	for db_test_report in db_test_report_list:
+		db_action_list.append(
+			ActionModel(get_action_dict('testreport', db_test_report.id, db_test_report.product, db_test_report.project,
+										db_test_report.createdBy, 'opened')))
+	create_all(db_action_list)
+
 	task_id_list = [task.task_id for task in task_para_list]  # 提取请求的测试单id列表
 	test_report_id_list = [test_report.id for test_report in db_test_report_list]  # 提取生成报告单的列表,报告单id列表
 	# 根据请求插入的记录的list长度比较，判断是否全部插入
 	if len(test_report_id_list) == len(task_id_list):
-		return response_code.resp_200(test_report_id_list, message='测试单{}的报告全部生成成功'.format(task_id_list))  # 返回报告单id的list
+		return response_code.resp_200(test_report_id_list,
+									  message='测试单{}的报告全部生成成功'.format(task_id_list))  # 返回报告单id的list
 	else:
 		return response_code.resp_400(message='测试报告未能全部生成，成功的测试单有{}'.format(task_id_list))
 

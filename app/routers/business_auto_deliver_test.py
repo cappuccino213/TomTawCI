@@ -5,11 +5,12 @@
 @Contact : yeahcheung213@163.com
 """
 from fastapi import APIRouter
-from app.schemas import test_deliver_schemas, build_schemas,test_task_schemas
+from app.schemas import test_deliver_schemas, build_schemas, test_task_schemas
 from app.utils import response_code, html2string
 from app.models.build_model import *
 from app.db.database import *
 from app.models.test_task_model import *
+from app.models.action_model import *
 from app.config import ROOT_DIRECTORY, APPLY_TEST
 import os
 
@@ -54,7 +55,7 @@ def para_deliver2task(parameter: test_deliver_schemas.Deliver):
 	build_id = build_list[0].id
 	# 获取测试单参数
 	task_name = "{}{}{} 测试申请".format(parameter.project_name, parameter.new_build_name,
-									   parameter.test_type)
+									 parameter.test_type)
 	test_desc_dict = dict(ifSmoke=parameter.if_smoke,
 						  manTime=parameter.man_time,
 						  testType=parameter.test_type,
@@ -62,7 +63,8 @@ def para_deliver2task(parameter: test_deliver_schemas.Deliver):
 						  buildDesc=parameter.desc)
 	task_desc = html2string.task_html2string(TEST_TASK_TEMPLATE_PATH, test_desc_dict)
 	test_task_dict = dict(name=task_name, product=parameter.product_id, project=parameter.project_id, build=build_id,
-						  owner=parameter.owner,pri=parameter.pri,mailto=parameter.mailto, desc=task_desc, begin=parameter.begin,
+						  owner=parameter.owner, pri=parameter.pri, mailto=parameter.mailto, desc=task_desc,
+						  begin=parameter.begin,
 						  end=parameter.end)
 	return test_task_dict
 
@@ -78,6 +80,11 @@ async def generate_deliver_task(deliver_info: test_deliver_schemas.Deliver):
 		update_build_schema.scmPath = deliver_info.scmPath
 		update_build_schema.filePath = deliver_info.filePath
 		update(update_build_schema, BuildModel)
+		# 插入操作日志
+		db_action = ActionModel(
+			get_action_dict('build', deliver_info.old_build_id, deliver_info.product_id, deliver_info.project_id,
+							deliver_info.builder, 'edited'))
+		create(db_action)
 		build_handle_flag = True
 		build_handle_message = "版本修改成功"
 	else:
@@ -91,6 +98,11 @@ async def generate_deliver_task(deliver_info: test_deliver_schemas.Deliver):
 			create_build_schema = para_deliver2build_schema(deliver_info)
 			db_build = BuildModel(create_build_schema.dict())
 			create(db_build)
+			# 插入操作日志
+			db_action = ActionModel(
+				get_action_dict('build', db_build.id, deliver_info.product_id, deliver_info.project_id,
+								deliver_info.builder, 'opened'))
+			create(db_action)
 			build_handle_flag = True
 			build_handle_message = "版本创建成功"
 	task_handle_flag = False
@@ -105,11 +117,21 @@ async def generate_deliver_task(deliver_info: test_deliver_schemas.Deliver):
 			update_task_schema = test_task_schemas.TestTask(**task_dict)
 			update_task_schema.id = update_test_task.id
 			update(update_task_schema, TestTaskModel)
+			# 插入操作日志
+			db_action = ActionModel(
+				get_action_dict('testtask', update_task_schema.id, deliver_info.product_id, deliver_info.project_id,
+								deliver_info.builder, 'edited'))
+			create(db_action)
 			task_handle_message = "测试单修改成功"
 			success_task_id = update_test_task.id
 		else:
 			db_test_task = TestTaskModel(task_dict)
 			create(db_test_task)
+			# 插入操作日志
+			db_action = ActionModel(
+				get_action_dict('testtask', db_test_task.id,deliver_info.product_id, deliver_info.project_id,
+								deliver_info.builder, 'opened'))
+			create(db_action)
 			task_handle_message = "测试单创建成功"
 			success_task_id = db_test_task.id
 		task_handle_flag = True
