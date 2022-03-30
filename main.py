@@ -17,7 +17,8 @@ from app.routers import (
 	business_product_project,
 	business_auto_distribute,
 	tools_router,
-	CD_server_router)
+	CD_server_router,
+CI_server_router)
 from starlette.responses import RedirectResponse
 from app.config import RUN_CONFIGURE
 from app.utils.log_handle import *
@@ -67,6 +68,8 @@ app.include_router(tools_router.router)
 # CD服务端
 app.include_router(CD_server_router.router)
 
+# CI
+app.include_router(CI_server_router.router)
 
 @app.get("/", name="WelCome to CIAPI!")
 # 将根路径重定向到swagger文档

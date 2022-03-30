@@ -8,7 +8,7 @@ from loguru import logger
 from pathlib import Path
 import time
 
-# 获取项目跟路径
+# 获取项目根路径
 project_path = Path.cwd().parent
 # 定义日志路径为:{项目根目录}/log
 log_path = Path(project_path, 'log')
