@@ -164,6 +164,8 @@ class ServiceOperation(BaseModel):
 class ConfigFiles(BaseModel):
 	cd_client: CDClient
 	directory: str
+	file_name: str
+	file_suffix: str
 
 	class Config:
 		schema_extra = {
@@ -172,7 +174,9 @@ class ConfigFiles(BaseModel):
 					"ip": "192.168.1.18",
 					"port": 8887
 				},
-				"directory": r"D:\producttest\eWordRIS\WebSite"
+				"directory": r"D:\producttest\eWordRIS\WebSite",
+				"file_name": "appsetting|DBconfig|Hgconfig",
+				"file_suffix": "json|xml|config|db3"
 			}
 		}
 

@@ -27,13 +27,13 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 
 	# 相关人员获取，由于禅道权限划分的特殊性，需要特殊处理
 	dev_member = ','.join([member['name'] for member in param_dict['members'] if member['role'] in ['研发', '研发主管']])
-	qa_member = ','.join([member['name'] for member in param_dict['members'] if member['role'] == '测试负责人'])
+	qa_member = ','.join([member['name'] for member in param_dict['members'] if '测试' in member['role']])
 	pm_member = ','.join(
 		[member['name'] for member in param_dict['members'] if (member['role'] == '研发主管' and member['name'] != '胡东慧')])
 
 	# 发布描述处理
 	desc_dict = dict(releaseBuild='{0}.{1}.b{2}'.format(param_dict['build_name'], param_dict['release_type'],
-													 str(date.today()).replace('-', '')),
+														str(date.today()).replace('-', '')),
 					 applyScope=param_dict['apply_scope'],
 					 releaseContent=param_dict['release_content'],
 					 changelogUrl=param_dict['ChangeLog_url'],
@@ -48,7 +48,9 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 	# 描述转化成html
 	desc = html2string.release_html2string(RELEASE_TEMPLATE_PATH, desc_dict)
 	return dict(product=param_dict['product'], build=param_dict['build'],
-				name='{0} {1}'.format(param_dict['product_code'], desc_dict['releaseBuild']), marker=param_dict['marker'],
+				name='{0} {1}'.format(param_dict['product_code'], desc_dict['releaseBuild']),
+				# name =f'{param_dict.get("product_code")} {desc_dict.get("releaseBuild")}',
+				marker=param_dict['marker'],
 				date=date.today(), desc=desc)
 
 

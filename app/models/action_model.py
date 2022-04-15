@@ -4,7 +4,7 @@
 @Author: 九层风（YePing Zhang）
 @Contact : yeahcheung213@163.com
 """
-# 系统日志表
+# 系统日志表，用于记录用户操作动态
 
 from app.db.database import Base
 from sqlalchemy import Column, Integer, String, Text, DateTime, Enum

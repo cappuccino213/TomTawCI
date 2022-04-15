@@ -200,6 +200,22 @@ async def find_configs(config_param: CD_schemas.ConfigFiles):
 		return response_code.resp_500(str(e))
 
 
+# 根据入参匹配遍历文件
+@router.post("/find_config_files_with_match", name="根据入参匹配查找配置文件")
+async def find_configs_with_param(config_param: CD_schemas.ConfigFiles):
+	try:
+		res = post(url='http://{0}:{1}/ewordcd/tools/find_config_files_with_match'.format(config_param.cd_client.ip,
+																						  config_param.cd_client.port),
+				   json={'directory': config_param.directory, 'file_name': config_param.file_name,
+						 'file_suffix': config_param.file_suffix})
+		if res.json():
+			return response_code.resp_200(res.json()['data'])
+		else:
+			return response_code.resp_204()
+	except Exception as e:
+		return response_code.resp_500(str(e))
+
+
 # 读取文件
 @router.post("/read_file", name="读取文件内容")
 async def read_file_content(read_para: CD_schemas.ReadConfig):

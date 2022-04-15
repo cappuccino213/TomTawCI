@@ -47,7 +47,7 @@ app = init_app()
 
 # app = FastAPI()
 
-"""注册路由"""
+"""注册路由到app"""
 # 基础数据
 app.include_router(user_router.router)
 app.include_router(build_router.router)
