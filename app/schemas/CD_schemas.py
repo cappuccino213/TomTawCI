@@ -5,7 +5,7 @@
 @Contact : yeahcheung213@163.com
 """
 from pydantic import BaseModel
-from typing import Optional, Text
+from typing import Optional
 from ipaddress import IPv4Address
 
 
@@ -164,6 +164,22 @@ class ServiceOperation(BaseModel):
 class ConfigFiles(BaseModel):
 	cd_client: CDClient
 	directory: str
+
+	class Config:
+		schema_extra = {
+			"example": {
+				"cd_client": {
+					"ip": "192.168.1.18",
+					"port": 8887
+				},
+				"directory": r"D:\producttest\eWordRIS\WebSite"
+			}
+		}
+
+
+class ConfigFilesWithParam(ConfigFiles):
+	# cd_client: CDClient
+	# directory: str
 	file_name: str
 	file_suffix: str
 

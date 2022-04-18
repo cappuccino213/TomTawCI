@@ -186,12 +186,12 @@ async def service_operation(operation_param: CD_schemas.ServiceOperation):
 
 
 # 找查找配置文件
-@router.post("/find_config_files", name="查找配置文件")
+@router.post("/find_config_files", name="查找配置文件(程序所需的json\config等配置文件，匹配目标固定)")
 async def find_configs(config_param: CD_schemas.ConfigFiles):
 	try:
-		res = get(url='http://{0}:{1}/ewordcd/tools/find_config_files?directory={2}'.format(config_param.cd_client.ip,
-																							config_param.cd_client.port,
-																							config_param.directory))
+		res = get(
+			url=f'http://{config_param.cd_client.ip}:{config_param.cd_client.port}/ewordcd/tools/find_config_files',
+			params={"directory": config_param.directory})
 		if res.json():
 			return response_code.resp_200(res.json()['data'])
 		else:
@@ -202,7 +202,7 @@ async def find_configs(config_param: CD_schemas.ConfigFiles):
 
 # 根据入参匹配遍历文件
 @router.post("/find_config_files_with_match", name="根据入参匹配查找配置文件")
-async def find_configs_with_param(config_param: CD_schemas.ConfigFiles):
+async def find_configs_with_param(config_param: CD_schemas.ConfigFilesWithParam):
 	try:
 		res = post(url='http://{0}:{1}/ewordcd/tools/find_config_files_with_match'.format(config_param.cd_client.ip,
 																						  config_param.cd_client.port),
