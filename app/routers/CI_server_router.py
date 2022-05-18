@@ -5,10 +5,15 @@
 @Contact : yeahcheung213@163.com
 """
 from fastapi import APIRouter
+from fastapi.encoders import jsonable_encoder
 
 from app.utils import response_code
 
-from schemas.CI_schemas import *
+from app.schemas.CI_schemas import *
+
+from app.models.ci_server_model import *
+
+from app.db.database import *
 
 import subprocess
 
@@ -42,6 +47,66 @@ async def server_monitor(param: ServerCheck):
 		return response_code.resp_200(result)
 	else:
 		return response_code.resp_400(message="参数不能为空")
+
+
+"""server的CRUD"""
+Base.metadata.create_all(bind=engine)
+
+
+# add
+@router.post("/add", response_model=Server, name="增加服务器")
+async def add_server(param: AddServer):
+	server_json = jsonable_encoder(param)
+	db_server = ServerModel(server_json)
+	# 先判断是否存在相同的ip记录
+	if not if_ip_exist(param.ipAddress, ServerModel):
+		create(db_server)
+		if db_server.id:
+			return response_code.resp_200(db_server.to_dict())
+		else:
+			return response_code.resp_400(message="新增服务器失败")
+	else:
+		return response_code.resp_400(message=f"ip为{param.ipAddress}的服务器已存在")
+
+
+# update
+@router.put("/update", response_model=Server, name="修改服务器信息")
+async def update_sever(param: Server):
+	if_success = update(param, ServerModel)
+	if if_success:
+		return response_code.resp_200(param.dict(), message="修改服务器信息成功")
+	else:
+		return response_code.resp_404(message=f"修改id={param.id}的服务器信息失败")
+
+
+# delete
+@router.delete("/delete", name="删除服务器")
+async def delete_sever(server_id: int):
+	# 先判断是否存在相同的ip记录
+	if_success = remove(server_id, ServerModel)
+	if if_success:
+		return response_code.resp_200([], message="删除服务器成功")
+	else:
+		return response_code.resp_404(message=f"删除id={server_id}的服务器失败")
+
+
+# get
+@router.get("/get", name="获取服务器信息")
+async def get_server(server_id: int):
+	db_server = get(server_id, ServerModel)
+	if db_server:
+		return response_code.resp_200(db_server.to_dict())
+	else:
+		return response_code.resp_404(message=f"找不到id={server_id}的服务器信息")
+
+
+@router.get("/get_list", name="获取服务器信息列表")
+async def get_servers():
+	db_server = get_server_list(ServerModel)
+	if db_server:
+		return response_code.resp_200(db_server)
+	else:
+		return response_code.resp_404(message="查无记录")
 
 
 if __name__ == "__main__":

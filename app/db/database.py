@@ -126,10 +126,11 @@ def remove(primary_id, models: Base):
 	remove_column = get(primary_id, models)
 	if remove_column:
 		try:
-			setattr(remove_column, 'deleted', '1')
+			# setattr(remove_column, 'deleted', '1')
+			Session.query(models).filter(models.id == primary_id).update({'deleted': '1'})
 			Session.commit()
 			Session.flush()
-			Session.refresh(remove_column)
+			# Session.refresh(remove_column)
 			return remove_column
 		except Exception as e:
 			logging.error(str(e))

@@ -33,6 +33,7 @@ class CDRegister(BaseModel):
 
 class AppParameter(BaseModel):
 	task_id: int
+	file_path: str
 	service_name: str
 	config_files: list[list]
 
@@ -40,6 +41,7 @@ class AppParameter(BaseModel):
 		schema_extra = {
 			"example": {
 				"task_id": 726,
+				"file_path": r"\\192.168.1.19\delivery\eWordRIS\V2.2.2.4483.20220507",
 				"service_name": 'eWordRISAPI',
 				"config_files": [[
 					r"E:\eWord\RIS\WebSite",

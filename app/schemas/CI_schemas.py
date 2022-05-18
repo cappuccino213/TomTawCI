@@ -6,6 +6,7 @@
 """
 from pydantic import BaseModel
 from ipaddress import IPv4Address
+from typing import Optional
 
 """服务器检测"""
 
@@ -21,6 +22,37 @@ class ServerCheck(BaseModel):
 			}
 		}
 
+
+class AddServer(BaseModel):
+	ipAddress: IPv4Address
+	serverName: str
+	remark: Optional[str]
+
+	# deleted: str
+
+	class Config:
+		schema_extra = {
+			"example": {
+				"ipAddress": "192.168.1.18",
+				"serverName": "测试服务器",
+				"remark": "功能测试部署应用"
+			}
+		}
+
+
+class Server(AddServer):
+	id: str
+	# deleted: str
+
+	class Config:
+		schema_extra = {
+			"example": {
+				"id": "1",
+				"ipAddress": "192.168.1.18",
+				"serverName": "测试服务器1",
+				"remark": "功能测试部署应用1"
+			}
+		}
 
 if __name__ == "__main__":
 	pass
