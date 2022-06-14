@@ -35,9 +35,9 @@ def check_server_online(host):
 	stdout, stderr = result.communicate()
 	# print(type(stdout))
 	if "无法访问" in stdout:
-		return host, False
+		return {'ip': host, 'status': False}
 	else:
-		return host, True
+		return {'ip': host, 'status': True}
 
 
 @router.post("/server_monitor", name="检测服务器是否在线")
@@ -59,14 +59,17 @@ async def add_server(param: AddServer):
 	server_json = jsonable_encoder(param)
 	db_server = ServerModel(server_json)
 	# 先判断是否存在相同的ip记录
-	if not if_ip_exist(param.ipAddress, ServerModel):
-		create(db_server)
-		if db_server.id:
-			return response_code.resp_200(db_server.to_dict())
+	try:
+		if not if_ip_exist(param.ipAddress, ServerModel):
+			create(db_server)
+			if db_server.id:
+				return response_code.resp_200(db_server.to_dict())
+			else:
+				return response_code.resp_400(message="新增服务器失败")
 		else:
-			return response_code.resp_400(message="新增服务器失败")
-	else:
-		return response_code.resp_400(message=f"ip为{param.ipAddress}的服务器已存在")
+			return response_code.resp_400(message=f"ip为{param.ipAddress}的服务器已存在")
+	except Exception as e:
+		return response_code.resp_400(message=f"增加失败，异常str{e}")
 
 
 # update

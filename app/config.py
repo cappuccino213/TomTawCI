@@ -12,7 +12,7 @@ import time
 DATABASE_CONFIGURE = {
 	# "SQLALCHEMY_DATABASE_URL": "mysql+pymysql://root:123456@localhost:3306/zentao",  # 链接
 	"SQLALCHEMY_DATABASE_URL": "mysql+pymysql://test:123456@192.168.1.43:3306/zentao",  # 链接
-	"SQL_ECHO": True  # 是否输出执行语句
+	"SQL_ECHO": False  # 是否输出执行语句
 }
 
 """CI相关配置"""
@@ -49,13 +49,13 @@ MAIL_CONFIG = {
 }
 
 # 日志配置
-# fastapi的日志配置，由于各函数的路径与main函数层次不一故单独在custom_log中配置
+# fastapi的日志配置main函数的运行日志配置，其他模块的运行日志单独在custom_log中配置
 LOG_CONFIG = {
 	'IF_DEBUG': True,
-	'LOG_PATH': Path.home().joinpath(ROOT_DIRECTORY, f'log\\{time.strftime("%Y%m%d")}.log'),
-	# 'ROTATION': '8:00',  # 每个日志多大
-	'ROTATION': '10 MB',  # 每个日志多大
-	'RETENTION': '10 days'  # 保留时长
+	'LOG_PATH': Path.home().joinpath(ROOT_DIRECTORY, f'logs\\start_{time.strftime("%Y%m%d")}.log'),
+	'ROTATION': '0:00',  # 每个日志多大
+	# 'ROTATION': '10 MB',  # 每个日志多大
+	'RETENTION': '1 week'  # 保留时长
 }
 # logger.add("file_1.log", rotation="500 MB")  # 自动循环过大的文件
 # logger.add("file_2.log", rotation="12:00")  # 每天中午创建新文件

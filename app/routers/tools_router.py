@@ -75,6 +75,9 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 		db_build = build_model.query_build_multiple_condition(dict(id=db_release.build))[0]
 		team_infos = team_model.get_team_info(db_build.project)
 		email_cc = [(team['name'], team['email']) for team in team_infos]
+		# 按照ISO标准发布邮件，需要抄送一份给牟工
+		# email_cc.append(('牟工', '303497982@qq.com'))
+		email_cc.extend(user_model.get_user_email(dict(dept=8)))  # 从部门为其他里面的获取牟的邮箱
 	# 测试数据
 	# email_to = user_model.get_user_email(dict(dept=4, account='zhangl'))  # 测试数据
 	# email_cc = [('九层风', '541159401@qq.com')]
@@ -90,6 +93,7 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 		db_build = build_model.query_build_multiple_condition(dict(id=db_release.build))[0]
 		team_infos = team_model.get_team_info(db_build.project)
 		email_cc = [(team['name'], team['email']) for team in team_infos]
+		email_cc.extend(user_model.get_user_email(dict(dept=8)))
 	# email_cc = [("张烨平", "1483029082@qq.com")]
 
 	return dict(mail_struct=email_struct, mail_server=email_server, mail_to=email_to, mail_cc=email_cc)
