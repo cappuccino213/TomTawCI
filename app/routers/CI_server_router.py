@@ -8,6 +8,7 @@ from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 
 from app.utils import response_code
+from app.utils import multiple_thread
 
 from app.schemas.CI_schemas import *
 
@@ -41,9 +42,24 @@ def check_server_online(host):
 
 
 @router.post("/server_monitor", name="检测服务器是否在线")
+# async def server_monitor(param: ServerCheck):
+# 	if param.ip_list:
+# 		result = [check_server_online(ip_add) for ip_add in param.ip_list]
+# 		return response_code.resp_200(result)
+# 	else:
+# 		return response_code.resp_400(message="参数不能为空")
+# 使用多线程检测，加快响应速度 #当列表中的入参ip是一样的时候会不准
 async def server_monitor(param: ServerCheck):
 	if param.ip_list:
-		result = [check_server_online(ip_add) for ip_add in param.ip_list]
+		threads = []
+		result = []
+		for ip_add in param.ip_list:
+			thread = multiple_thread.MultipleThread(check_server_online, args=(ip_add,))
+			thread.start()
+			threads.append(thread)
+		for thread in threads:
+			thread.join()
+			result.append(thread.get_result())
 		return response_code.resp_200(result)
 	else:
 		return response_code.resp_400(message="参数不能为空")
