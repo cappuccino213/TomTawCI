@@ -48,7 +48,8 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 	# 描述转化成html
 	desc = html2string.release_html2string(RELEASE_TEMPLATE_PATH, desc_dict)
 	return dict(product=param_dict['product'], build=param_dict['build'],
-				name='{0} {1}'.format(param_dict['product_code'], desc_dict['releaseBuild']),
+				# name='{0} {1}'.format(param_dict['product_code'], desc_dict['releaseBuild']),
+				name=f"{desc_dict['releaseBuild']}",
 				# name =f'{param_dict.get("product_code")} {desc_dict.get("releaseBuild")}',
 				marker=param_dict['marker'],
 				date=date.today(), desc=desc)
@@ -71,8 +72,12 @@ async def auto_distribute(release_info: release_schemas.CreateRelease):
 	build_param = dict(name=release_info.build_name, product=release_info.product, project=release_info.project)
 	src_dir_path = query_build_multiple_condition(build_param)[0].filePath  # 如果获取到结果为空这里就会报错
 	dst_file_path = os.path.join(AUTO_DISTRIBUTE['COMPRESS_PATH'],
+								 release_info.product_code,
 								 str(datetime.datetime.now().year),  # 增加一级当下的年份路径
-								 release_info.product_code, '{}.7z'.format(release_dict['name']))
+								 f"{release_dict['name']}.7z")
+	# logging.info(dst_file_path)
+	# logging.info(release_info.product_code)
+	# logging.info(f"{release_dict['name']}.7z")
 	compress_info = dict(src_dir_path=src_dir_path, dst_file_path=dst_file_path)
 	if db_release.id:  # 根据有没有生成新的id判断是否插入成功
 		# return response_code.resp_200({'release': db_release.to_dict(), 'compress_info': compress_info})
