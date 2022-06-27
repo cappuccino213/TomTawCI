@@ -39,15 +39,17 @@ class EmailNotice(BaseModel):
 	server_account: EmailStr
 	server_password: str
 	email_to: Optional[List[str]]
+	if_review: Optional[bool]  # 是否评审，若传true，则会抄送邮件给评审人
 
-	# 参数校验，当notice_type的值未release_manual时，需要传email_to
-	# @validator('email_to')
-	# def email_to_rule(cls):
-	# 	if 'notice_type' == 'release_manual':
-	# 		if not 'email_to':
-	# 			raise ValueError("'when notice_type is release_manual,email_to must be a list,like ['zyp','zhangl']'")
-	# 		else:
-	# 			return True
+
+# 参数校验，当notice_type的值未release_manual时，需要传email_to
+# @validator('email_to')
+# def email_to_rule(cls):
+# 	if 'notice_type' == 'release_manual':
+# 		if not 'email_to':
+# 			raise ValueError("'when notice_type is release_manual,email_to must be a list,like ['zyp','zhangl']'")
+# 		else:
+# 			return True
 
 
 if __name__ == "__main__":

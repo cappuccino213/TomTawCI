@@ -6,7 +6,9 @@
 """
 
 from pathlib import Path
+
 import time
+import os
 
 """数据库配置"""
 DATABASE_CONFIGURE = {
@@ -66,7 +68,8 @@ RUN_CONFIGURE = {
 	"PORT": 8889,  # 端口号
 	"RELOAD": True,  # 是否重载代码，调试使用
 	"DEBUG": True,  # 是否开启调试
-	"WORKERS": 4
+	# "WORKERS": 4
+	"WORKERS": os.cpu_count() - 1  # 最佳进程数为n-1
 }
 
 # 更多参数详见\TomTawCI\venv\Lib\site-packages\uvicorn\main.py

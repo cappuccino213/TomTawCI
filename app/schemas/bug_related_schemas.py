@@ -26,6 +26,7 @@ class BugSeverityNum(BaseModel):
 			}
 		}
 
+
 # 根据bug相关的提测版本质量的评估
 class BuildQualityEvaluation(BaseModel):
 	IN_value: int

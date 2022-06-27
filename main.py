@@ -8,7 +8,7 @@
 from fastapi import FastAPI
 from app.routers import (
 	user_router, test_report_router,
-	build_router,
+	build_router, bug_router, dev_task_router,
 	bug_related_evaluations_router,
 	test_task_router,
 	team_router,
@@ -18,7 +18,7 @@ from app.routers import (
 	business_auto_distribute,
 	tools_router,
 	CD_server_router,
-CI_server_router)
+	CI_server_router)
 from starlette.responses import RedirectResponse
 from app.config import RUN_CONFIGURE
 from app.utils.log_handle import *
@@ -54,6 +54,8 @@ app.include_router(build_router.router)
 app.include_router(test_task_router.router)
 app.include_router(test_report_router.router)
 app.include_router(team_router.router)
+app.include_router(bug_router.router)
+app.include_router(dev_task_router.router)
 
 # 业务
 app.include_router(bug_related_evaluations_router.router)
@@ -71,6 +73,7 @@ app.include_router(CD_server_router.router)
 # CI
 app.include_router(CI_server_router.router)
 
+
 @app.get("/", name="WelCome to CIAPI!")
 # 将根路径重定向到swagger文档
 async def root():
@@ -84,8 +87,6 @@ if __name__ == "__main__":
 	# 脚本启动
 	uvicorn.run(app='main:app', host="0.0.0.0", port=RUN_CONFIGURE['PORT'], reload=RUN_CONFIGURE['RELOAD'],
 				debug=RUN_CONFIGURE['DEBUG'], workers=RUN_CONFIGURE['WORKERS'])
-# uvicorn.run(app='main:app', host="0.0.0.0", port=8889, reload=True, debug=False, workers=4)
-
 
 """
 命令行启动

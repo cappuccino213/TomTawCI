@@ -37,8 +37,32 @@ class BugModel(Base):
 	resolvedDate = Column(DateTime)  # 解决日期
 	deleted = Column(Enum('0', '1'))
 
+	def to_dict(self):
+		return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
 
 """bug的CRUD"""
+
+
+# 根据解决版本、状态、项目等条件获取bug的列表
+def query_bug_list(condition: dict):
+	"""
+	:param condition: resolvedBuild、status、project，etc.
+	:return: bug list
+	"""
+	try:
+		result = Session.query(BugModel).filter(BugModel.deleted == '0')
+		if condition.get('project'):
+			result = result.filter(BugModel.project == condition.get('project'))
+		if condition.get('status'):
+			result = result.filter(BugModel.status == condition.get('status'))
+		if condition.get('resolvedBuild'):
+			result = result.filter(BugModel.resolvedBuild == condition.get('resolvedBuild'))
+		return result.all()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
 
 
 # 根据测试单号获取关联的bug的id，用,隔开
@@ -141,5 +165,8 @@ def release_evaluation(in_value: int):
 
 if __name__ == "__main__":
 	# bug_num = {'fatal': 0, 'severe': 1, 'mistake': 2, 'suggest': 3}
-	ins_value = calculate_in_value(get_testtask_bug_statistics(688))
-	print(ins_value)
+	# ins_value = calculate_in_value(get_testtask_bug_statistics(688))
+	# print(ins_value)
+
+	bug_list = query_bug_list({"project": 35, "status": "resolved","resolvedBuild":864})
+	print([bug.to_dict() for bug in bug_list])

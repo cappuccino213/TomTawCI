@@ -30,9 +30,10 @@ def package(src_dir_path: str, dst_file_path: str, password='TomTaw@HZ'):
 
 
 def email_notice_rule(notice_type: str, business_id: int, server_account: str, server_password: str,
-					  email_accounts: list[str]):
+					  email_accounts: list[str], if_review=False):
 	"""
 	根据不同的通知类型notice_type，用business_id去获取邮件信息
+	:param if_review: # 是否评审，true：则会抄送邮件给评审人，默认不抄送，暂时只用在release类型的邮件
 	:param notice_type: test_report,test_task,release
 	:param business_id: 测试报告id，测试id，发布单id
 	:param server_password: 邮件服务器密码
@@ -75,9 +76,9 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 		db_build = build_model.query_build_multiple_condition(dict(id=db_release.build))[0]
 		team_infos = team_model.get_team_info(db_build.project)
 		email_cc = [(team['name'], team['email']) for team in team_infos]
-		# 按照ISO标准发布邮件，需要抄送一份给牟工
-		# email_cc.append(('牟工', '303497982@qq.com'))
-		email_cc.extend(user_model.get_user_email(dict(dept=8)))  # 从部门为其他里面的获取牟的邮箱
+		if if_review:
+			# 按照ISO标准发布邮件，需要抄送一份给牟工
+			email_cc.extend(user_model.get_user_email(dict(dept=8)))  # 从部门为【发布评审】里面的获取牟的邮箱（暂时关闭，改为手动通知，下次加一个通知标记）
 	# 测试数据
 	# email_to = user_model.get_user_email(dict(dept=4, account='zhangl'))  # 测试数据
 	# email_cc = [('九层风', '541159401@qq.com')]
@@ -93,7 +94,9 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 		db_build = build_model.query_build_multiple_condition(dict(id=db_release.build))[0]
 		team_infos = team_model.get_team_info(db_build.project)
 		email_cc = [(team['name'], team['email']) for team in team_infos]
-		email_cc.extend(user_model.get_user_email(dict(dept=8)))
+		if if_review:
+			email_cc.extend(user_model.get_user_email(dict(dept=8)))
+	# email_cc.extend(user_model.get_user_email(dict(dept=8)))
 	# email_cc = [("张烨平", "1483029082@qq.com")]
 
 	return dict(mail_struct=email_struct, mail_server=email_server, mail_to=email_to, mail_cc=email_cc)
