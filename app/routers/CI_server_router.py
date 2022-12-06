@@ -23,7 +23,8 @@ router = APIRouter(prefix="/ewordci/ci_server", tags=["ci_server"])
 
 # 检测API是否启动
 @router.get("/check", name="检测API服务是否正常启动")
-async def check():
+# async def check():
+def check():  # 防止接口耗时到时请求堵塞，使用同步
 	return response_code.resp_200("WelCome to eWordCI", message="Success")
 
 
@@ -49,7 +50,7 @@ def check_server_online(host):
 # 	else:
 # 		return response_code.resp_400(message="参数不能为空")
 # 使用多线程检测，加快响应速度 #当列表中的入参ip是一样的时候会不准
-async def server_monitor(param: ServerCheck):
+def server_monitor(param: ServerCheck):
 	if param.ip_list:
 		threads = []
 		result = []

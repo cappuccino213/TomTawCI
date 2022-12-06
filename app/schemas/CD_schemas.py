@@ -32,8 +32,8 @@ class CDRegister(BaseModel):
 
 
 class AppParameter(BaseModel):
-	task_id: int
-	file_path: str
+	task_id: Optional[int]
+	file_path: Optional[str]
 	service_name: str
 	config_files: list[list]
 

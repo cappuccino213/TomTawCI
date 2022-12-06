@@ -49,7 +49,7 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 	desc = html2string.release_html2string(RELEASE_TEMPLATE_PATH, desc_dict)
 	return dict(product=param_dict['product'], build=param_dict['build'],
 				# name='{0} {1}'.format(param_dict['product_code'], desc_dict['releaseBuild']),
-				name=f"{desc_dict['releaseBuild']}",
+				name=f"{param_dict['product_code']} {desc_dict['releaseBuild']}",
 				# name =f'{param_dict.get("product_code")} {desc_dict.get("releaseBuild")}',
 				marker=param_dict['marker'],
 				date=date.today(), desc=desc)

@@ -58,6 +58,7 @@ async def register(rg_para: CD_schemas.CDRegister):
 			for item in CD_CLIENT_INFO:
 				if (rg_para_dict['ip'], rg_para_dict['port']) == (item.get('ip'), item.get('port')):
 					item['online'] = True
+					# item['desc'] = rg_para_dict['desc']
 					json_rw.write_json(CD_CLIENT_INFO)
 					break
 			custom_log.logging.info("相同客户端已注册，激活在线标记")
@@ -95,9 +96,19 @@ async def update_cd_clients_info(client_infos: list[dict]):
 		return response_code.resp_500(message=str(e))
 
 
+# 查看服务器是否被远程
+@router.post("/cd-client-if-remoted", name="查看服务器是否被远程")
+async def check_client_remoted(client: CD_schemas.CDClient):
+	res = get(url=f"http://{client.ip}:{client.port}/ewordcd/tools/if_remoted",timeout=2)
+	if res.json()['code'] == 200:
+		return response_code.resp_200(res.json()['data'], message=res.json()['message'])
+	else:
+		return response_code.resp_500(res.json()['message'])
+
+
 # 部署程序
 @router.post("/application/deploy", name="部署程序")
-def application_deploy(app_deploy: CD_schemas.AppDeploy):
+async def application_deploy(app_deploy: CD_schemas.AppDeploy):
 	if CD_CLIENT_INFO:
 		# 判断对应的服务器上是否注册和安装了CD客户端
 		check_li = [(client['ip'], client['online']) for client in CD_CLIENT_INFO]
@@ -125,13 +136,15 @@ def application_upgrade(upgrade_para: CD_schemas.AppUpgrade):
 		# 判断对应的服务器上是否注册和安装了CD客户端
 		check_li = [(client['ip'], client['online']) for client in CD_CLIENT_INFO]
 		if (str(upgrade_para.cd_client.ip), True) in check_li:
-			try:
-				post(url='http://{0}:{1}/ewordcd/application/upgrade'.format(upgrade_para.cd_client.ip,
-																			 upgrade_para.cd_client.port),
-					 json=upgrade_para.app_para.dict())
-				return response_code.resp_200({})
-			except Exception as e:
-				return response_code.resp_500(str(e))
+			res = post(
+				url=f"http://{upgrade_para.cd_client.ip}:{upgrade_para.cd_client.port}/ewordcd/application/upgrade",
+				json=upgrade_para.app_para.dict())
+			if res.status_code == 200:
+				return response_code.resp_200({}, message="更新成功")
+			else:
+				error_message = res.json()['message']
+				custom_log.logging.error(f"{error_message}")
+				return response_code.resp_400(error_message)
 		else:
 			return response_code.resp_204(message="该CD客户端未注册或已离线")
 	else:
@@ -143,7 +156,9 @@ def application_upgrade(upgrade_para: CD_schemas.AppUpgrade):
 
 # 获取tomtaw服务列表
 @router.post("/find_tomtaw_services", name="查找公司的服务信息")
-async def find_tomtaw_services(client_info: CD_schemas.CDClient):
+# TODO 验证一下卡死问题，卡死步骤：切到服务列表，启动相应的CD服务，然后停止CD服务查看，19CI服务情况
+# async def find_tomtaw_services(client_info: CD_schemas.CDClient):
+def find_tomtaw_services(client_info: CD_schemas.CDClient):  # 防止服务卡死，不使用aysnc
 	try:
 		res = get(url='http://{0}:{1}/ewordcd/tools/find_tomtaw_services'.format(client_info.ip, client_info.port),
 				  params=None)

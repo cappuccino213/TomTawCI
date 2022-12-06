@@ -12,7 +12,7 @@ from typing import Union
 
 # 响应状态的封装
 # 其他状态处理可见https://github.com/CoderCharm/FastAdmin/blob/master/backend/app/api/utils/response_code.py
-def resp_200(data: Union[list, dict, str], message="Success") -> Response:
+def resp_200(data: Union[list, dict, str, bool], message="Success") -> Response:
 	return JSONResponse(
 		status_code=status.HTTP_200_OK,
 		content={'code': 200,

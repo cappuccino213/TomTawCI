@@ -54,7 +54,7 @@ MAIL_CONFIG = {
 # fastapi的日志配置main函数的运行日志配置，其他模块的运行日志单独在custom_log中配置
 LOG_CONFIG = {
 	'IF_DEBUG': True,
-	'LOG_PATH': Path.home().joinpath(ROOT_DIRECTORY, f'logs\\start_{time.strftime("%Y%m%d")}.log'),
+	'LOG_PATH': Path.home().joinpath(ROOT_DIRECTORY, f'logs\\TomTawCI_{time.strftime("%Y%m%d")}.log'),
 	'ROTATION': '0:00',  # 每个日志多大
 	# 'ROTATION': '10 MB',  # 每个日志多大
 	'RETENTION': '1 week'  # 保留时长
