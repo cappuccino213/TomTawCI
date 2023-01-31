@@ -23,7 +23,7 @@ def compress_to_7z(src_dir, dst_path, password):
 
 	# 判断是否安装了bandizip(一款免费的高效压缩工具)
 	if "Bandizip console tool" in run_shell("bz"):
-		compress_cli = f'bz c -p:{password} "{dst_path}" "{src_dir}"'
+		compress_cli = f'bz c -l:1 -p:{password} "{dst_path}" "{src_dir}"'
 		logging.info(f"启用Bandizip进行压缩")
 		run_shell(compress_cli)
 
