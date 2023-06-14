@@ -26,6 +26,14 @@ async def get_test_task(task_id: int):
 	else:
 		return response_code.resp_404(message="找不到id={}的测试单".format(task_id))
 
+# 多条件获取测试单列表
+@router.post("/list",name="获取测试单列表")
+async def get_test_task_list(query_condition:test_task_schemas.QueryTestTask):
+	task_list = query_test_task_list(query_condition.dict())
+	if task_list:
+		return response_code.resp_200(task_list)
+	else:
+		return response_code.resp_400(message="暂无数据")
 
 @router.post("/create", response_model=test_task_schemas.TestTask, name="创建测试单")
 async def test_task_create(test_task: test_task_schemas.TestTask):

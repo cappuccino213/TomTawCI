@@ -49,7 +49,7 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 	#  测试单
 	if notice_type == 'test_task':
 		db_test_task = get(business_id, test_task_model.TestTaskModel)
-		email_struct = dict(subject=db_test_task.name, content_html=db_test_task.desc)
+		email_struct = dict(subject=db_test_task.name+f"[{business_id}]", content_html=db_test_task.desc)
 		email_to = user_model.get_user_email(dict(account=db_test_task.owner))
 		if db_test_task.mailto:
 			email_cc = user_model.get_user_email(dict(account=db_test_task.mailto.split(',')[1:]))

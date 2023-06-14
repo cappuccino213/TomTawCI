@@ -41,6 +41,29 @@ class TestTask(BaseModel):
 			}
 		}
 
+# 多条件查询
+class QueryTestTask(BaseModel):
+	product: Optional[int]
+	project: Optional[int]
+	build: Optional[str]
+	owner: Optional[str]
+	begin: Union[str, date] = date.today()  # 可选类型
+	end: Union[str, date] = date.today()
+	status: str = 'done'  # 枚举值'blocked'（阻塞）, 'doing'（进行中）, 'wait'(未开始), 'done'（完成）
+
+	# 内部类，固定用法，声明请求示例
+	class Config:
+		schema_extra = {
+			"example": {
+				"product": 0,
+				"project": 0,
+				"build": "",
+				"owner": "zyp",
+				"begin": "2023-06-01",
+				"end": "2023-06-12",
+				"status":"done"
+			}
+		}
 
 class TestTaskWithoutReport1(BaseModel):
 	id: Optional[int] = 0

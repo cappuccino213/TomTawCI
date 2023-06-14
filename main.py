@@ -12,6 +12,7 @@ from app.routers import (
 	bug_related_evaluations_router,
 	test_task_router,
 	team_router,
+	story_router,
 	business_auto_deliver_test,
 	business_auto_create_report,
 	business_product_project,
@@ -27,6 +28,7 @@ from pathlib import Path
 import uvicorn
 import sys
 import os
+
 
 
 # 引入日志模块
@@ -56,6 +58,7 @@ app.include_router(test_report_router.router)
 app.include_router(team_router.router)
 app.include_router(bug_router.router)
 app.include_router(dev_task_router.router)
+app.include_router(story_router.router)
 
 # 业务
 app.include_router(bug_related_evaluations_router.router)
