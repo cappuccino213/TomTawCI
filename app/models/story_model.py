@@ -50,6 +50,7 @@ class StoryModel(Base):
                 result = result.filter(cls.product == condition.get('product'))
             if condition.get('status'):
                 result = result.filter(cls.status == condition.get('status'))
+                # 最后编辑人是谁就算是当前责任人
             if condition.get('owner'):
                 result = result.filter(cls.lastEditedBy == condition.get('owner'))
             if condition.get('begin'):

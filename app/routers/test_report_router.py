@@ -26,6 +26,15 @@ async def get_test_report(report_id: int):
 		return response_code.resp_404(message="找不到id={}的测试报告".format(report_id))
 
 
+@router.post("/info", name="多条件查询报告信息")
+async def query_test_report_info(condition: test_report_schemas.QueryTestReport):
+	test_report_info = TestReportModel.query_report_info(condition.dict())
+	if test_report_info:
+		return response_code.resp_200(test_report_info)
+	else:
+		return response_code.resp_404(message="符合条件的{}测试报告信息".format(condition.dict()))
+
+
 @router.post("/create", response_model=test_report_schemas.TestReport, name="创建测试报告")
 async def test_report_create(report: test_report_schemas.TestReport):
 	report_json = jsonable_encoder(report)  # 将入参json格式化
