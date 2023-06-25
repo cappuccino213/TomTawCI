@@ -11,6 +11,7 @@ from app.routers import (
 	build_router, bug_router, dev_task_router,
 	bug_related_evaluations_router,
 	test_task_router,
+	projectstory_router,
 	team_router,
 	story_router,
 	business_auto_deliver_test,
@@ -59,6 +60,7 @@ app.include_router(team_router.router)
 app.include_router(bug_router.router)
 app.include_router(dev_task_router.router)
 app.include_router(story_router.router)
+app.include_router(projectstory_router.router)
 
 # 业务
 app.include_router(bug_related_evaluations_router.router)

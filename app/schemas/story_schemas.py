@@ -30,5 +30,24 @@ class QueryStory(BaseModel):
         }
 
 
+# 查询项目需求信息
+class QueryProjectStory(BaseModel):
+    product: int
+    story: int
+    project: Optional[int]
+    version: Optional[int]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "product": 7,
+                "story": 740,
+                "project": 0,
+                "version": 0,
+
+            }
+        }
+
+
 if __name__ == "__main__":
     pass
