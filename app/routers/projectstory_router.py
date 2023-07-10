@@ -12,7 +12,7 @@ from app.db.database import engine, Base
 
 Base.metadata.create_all(bind=engine)
 
-router = APIRouter(prefix="/ewordci/prjectstory", tags=["prjectstory"])
+router = APIRouter(prefix="/ewordci/projectstory", tags=["projectstory"])
 
 
 @router.post("/info", name="查询项目需求信息")

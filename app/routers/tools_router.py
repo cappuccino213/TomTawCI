@@ -30,7 +30,7 @@ def package(src_dir_path: str, dst_file_path: str, password='TomTaw@HZ'):
 
 
 def email_notice_rule(notice_type: str, business_id: int, server_account: str, server_password: str,
-					  email_accounts: list[str], if_review=False):
+					  email_accounts: list[str], if_review=True):
 	"""
 	根据不同的通知类型notice_type，用business_id去获取邮件信息
 	:param if_review: # 是否评审，true：则会抄送邮件给评审人，默认不抄送，暂时只用在release类型的邮件

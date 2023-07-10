@@ -5,7 +5,6 @@
 @Contact : yeahcheung213@163.com
 """
 from datetime import date
-
 from pydantic import BaseModel
 from typing import Optional, Union
 

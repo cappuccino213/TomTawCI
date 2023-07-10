@@ -122,7 +122,8 @@ def query_test_task_list(condition: dict):
             result = result.filter(TestTaskModel.owner == condition.get('owner'))
         if condition.get('build'):
             result = result.filter(TestTaskModel.build == condition.get('build'))
-        if condition.get('status'):
+        # 只获取进行中和完成的任务
+        if condition.get('status') in ('doing','done'):
             result = result.filter(TestTaskModel.status == condition.get('status'))
         if condition.get('begin'):
             # 以结束日期查询

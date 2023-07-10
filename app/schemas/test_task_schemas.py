@@ -49,7 +49,7 @@ class QueryTestTask(BaseModel):
 	owner: Optional[str]
 	begin: Union[str, date] = date.today()  # 可选类型
 	end: Union[str, date] = date.today()
-	status: str = 'done'  # 枚举值'blocked'（阻塞）, 'doing'（进行中）, 'wait'(未开始), 'done'（完成）
+	status: Optional[str]  # 枚举值'blocked'（阻塞）, 'doing'（进行中）, 'wait'(未开始), 'done'（完成）
 
 	# 内部类，固定用法，声明请求示例
 	class Config:
