@@ -80,7 +80,8 @@ def release_html2string(html_file, desc: dict):
 								   devMember=desc.get('devMember'),
 								   qaMember=desc.get('qaMember'),
 								   PMMember=desc.get('PMMember'),
-								   releaser=desc.get('releaser'))
+								   releaser=desc.get('releaser'),
+								   compressPwd=desc.get('compress_pwd'))
 	return html_str
 
 

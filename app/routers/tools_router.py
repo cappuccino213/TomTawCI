@@ -21,7 +21,7 @@ router = APIRouter(prefix="/ewordci/tools", tags=["tools"])
 def package(src_dir_path: str, dst_file_path: str, password='TomTaw@HZ'):
 	try:
 		compress.compress_to_7z(src_dir_path, dst_file_path, password)
-		return resp_200(dict(), message="已将文件打包至{}".format(dst_file_path))
+		return resp_200(dict(compress_code=password), message="已将文件打包至{}".format(dst_file_path))
 	except Exception as e:
 		return resp_400(message="打包失败，原因{}".format(str(e)))
 
@@ -80,8 +80,8 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 			# 按照ISO标准发布邮件，需要抄送一份给牟工
 			email_cc.extend(user_model.get_user_email(dict(dept=8)))  # 从部门为【发布评审】里面的获取牟的邮箱（暂时关闭，改为手动通知，下次加一个通知标记）
 	# 测试数据
-	# email_to = user_model.get_user_email(dict(dept=4, account='zhangl'))  # 测试数据
-	# email_cc = [('九层风', '541159401@qq.com')]
+	# 	email_to = user_model.get_user_email(dict(dept=4, account='zhangl'))  # 测试数据
+	# 	email_cc = [('九层风', '541159401@qq.com')]
 
 	# 是否手动通知即传邮箱的方式
 	elif notice_type == 'release_manual':

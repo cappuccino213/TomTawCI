@@ -7,7 +7,7 @@
 from fastapi import APIRouter
 from app.schemas import release_schemas
 from app.config import ROOT_DIRECTORY, AUTO_DISTRIBUTE
-from app.utils import html2string, response_code
+from app.utils import html2string, response_code,compress
 from datetime import date
 from app.models.release_model import ReleaseModel
 from app.models.build_model import query_build_multiple_condition
@@ -44,7 +44,10 @@ def get_release_dict_from_param(param: release_schemas.CreateRelease):
 					 devMember=dev_member,
 					 qaMember=qa_member,
 					 PMMember=pm_member,
-					 releaser=param_dict['releaser'])
+					 releaser=param_dict['releaser'],
+					 compress_pwd=param_dict['compress_secret'])
+
+
 	# 描述转化成html
 	desc = html2string.release_html2string(RELEASE_TEMPLATE_PATH, desc_dict)
 	return dict(product=param_dict['product'], build=param_dict['build'],

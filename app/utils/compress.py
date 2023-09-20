@@ -5,12 +5,13 @@
 @Contact : yeahcheung213@163.com
 """
 import datetime
+import string
 
 import py7zr
 import os
 
 from app.utils.excute_shell import *
-
+from random import choices
 
 def compress_to_7z(src_dir, dst_path, password):
 	"""
@@ -43,6 +44,20 @@ def compress_to_7z(src_dir, dst_path, password):
 					file_name = os.path.join(f_path, file_name)
 					zf.write(file_path, arcname=file_name)
 
+# 随机生成密码,前端生成暂未用到
+def generate_password(digit_num:int)->str:
+	# 小写字母
+	letter_lower = [letter for letter in string.ascii_lowercase]
+	# 大写字母
+	letter_upper = [letter for letter in string.ascii_uppercase]
+	# 数字
+	nums = [n for n in string.digits]
+	pwd= "".join([choices(letter_lower+letter_upper+nums)[0] for _ in range(digit_num)])
+	# print(pwd)
+	return pwd
+
+
+# CompressPassword = generate_password(6)
 
 if __name__ == "__main__":
 	pass
@@ -53,3 +68,5 @@ if __name__ == "__main__":
 	compress_to_7z(src_dir1, dst_dir1, 'TomTaw@HZ')
 	# multi_thread_compress_to_7z(src_dir1, dst_dir1, 'TomTaw@HZ')
 	print(datetime.datetime.now() - start)
+
+	# generate_password(6)

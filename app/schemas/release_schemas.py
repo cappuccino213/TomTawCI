@@ -28,6 +28,7 @@ class CreateRelease(BaseModel):
 	# members: str  # 相关人员
 	members: list[dict]  # 相关人员
 	releaser: str  # 发布人
+	compress_secret:str # 压缩密码
 
 	# desc: 发布版本号、适用范围、发布内容
 
@@ -49,6 +50,7 @@ class CreateRelease(BaseModel):
 				"update_note": "更新说明的链接",
 				"attention": "注意事项，html格式",
 				"release_link": "发布链接，html格式",
+				"compress_secret": "压缩密码",
 				"members": [
 					{
 						"project": 66,
