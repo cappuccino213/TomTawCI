@@ -35,7 +35,7 @@ AUTO_TEST_REPORT = {
 # 自动发布
 AUTO_DISTRIBUTE = {
 	'TEMPLATE': 'releaseDesc.html',
-	'COMPRESS_PATH': r'\\192.168.1.19\distribution'
+	'COMPRESS_PATH': r'\\192.168.1.19\distribution'  # 程序发布路径
 
 }
 """CD相关配置"""
