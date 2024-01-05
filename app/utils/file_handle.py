@@ -27,6 +27,6 @@ if __name__ == "__main__":
 	# copy_file(r'\\192.168.1.19\delivery\eWordRIS\V2.2.0.4231.20211022.zip',r'Y:\公共空间\temp\瑞康需求')
 	# copy_file(r'C:\Users\eword\Desktop\eWordRIS-20211111160400.zip',r'Y:\公共空间\temp')
 
-	# make_dir(r'\\192.168.1.19\distribution\eWordDEP\2023\1')
+	make_dir(r'\\192.168.1.19\delivery\temp\2025')
 
-	os.mkdir(r'\\192.168.1.19\distribution\eWordDEP\2023\1')
+	# os.mkdir(r'\\192.168.1.19\distribution\eWordDEP\2023\1')

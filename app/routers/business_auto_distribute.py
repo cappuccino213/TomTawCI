@@ -84,6 +84,12 @@ async def auto_distribute(release_info: release_schemas.CreateRelease):
                                  f"{release_dict['name']}.7z")
     compress_info = dict(src_dir_path=src_dir_path, dst_file_path=dst_file_path)
 
+    # 判断是否存在打包目录，如不存在就要创建
+    compress_folder = os.path.split(dst_file_path)[0]
+    if not os.path.exists(compress_folder):
+        print(f"打包目录{compress_folder}不存在,即将被创建...")
+        os.mkdir(compress_folder)
+
     # 生成发布审批单
     today_date = datetime.datetime.now().date()
 
@@ -110,8 +116,8 @@ async def auto_distribute(release_info: release_schemas.CreateRelease):
 
 
 @router.post("/upload", name="自动发布版本-程序入版本仓库")
-async def auto_distribute(release_info: release_schemas.CreateRelease):
-    return "自动发布"
+async def auto_base(release_info: release_schemas.CreateRelease):
+    return "自动入仓库"
 
 
 if __name__ == "__main__":

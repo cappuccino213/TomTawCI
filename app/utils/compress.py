@@ -62,10 +62,13 @@ def generate_password(digit_num:int)->str:
 if __name__ == "__main__":
 	pass
 	src_dir1 = r"\\192.168.1.19\delivery\eWordRIS\V2.2.2.44834466690000.20220614"
+	src_dir2 = r"\\192.168.1.19\delivery\temp1\temp.txt"
 	dst_dir1 = r"D:\CI_Client\temp\V2.2.2.44834466690000.20220614.7z"
+	dst_dir2 = r"D:\Test\2023\t.7z"
 
 	start = datetime.datetime.now()
-	compress_to_7z(src_dir1, dst_dir1, 'TomTaw@HZ')
+	# compress_to_7z(src_dir1, dst_dir1, 'TomTaw@HZ')
+	compress_to_7z(src_dir2, dst_dir2, 'TomTaw@HZ')
 	# multi_thread_compress_to_7z(src_dir1, dst_dir1, 'TomTaw@HZ')
 	print(datetime.datetime.now() - start)
 

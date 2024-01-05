@@ -1,56 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
-<table class="table table-kindeditor ke-select-col" style="width:75%;color:#53523c;">
-    <tbody>
-    <tr>
-        <td class>发布版本号<br/></td>
-        <td class>{releaseBuild}<br/></td>
-    </tr>
-    <tr>
-        <td class>适用范围</td>
-        <td class>{applyScope}</td>
-    </tr>
-    <tr>
-        <td class>发布内容</td>
-        <td class>{releaseContent}</td>
-    </tr>
-    <tr>
-        <td class>ChangeLog</td>
-        <td class>{changelogUrl}</td>
-    </tr>
-    <tr>
-        <td class>更新说明</td>
-        <td class>{updateNote}</td>
-    </tr>
-    <tr>
-        <td>注意事项</td>
-        <td class>{attention}</td>
-    </tr>
-    <tr>
-        <td>发布链接</td>
-        <td class>{releaseLink}</td>
-    </tr>
-    <tr>
-        <td>解压密码</td>
-        <td class>{compressPwd}</td>
-    </tr>
-    <tr>
-        <td>相关人员</td>
-        <td>
-            <p class="MsoNormal">研发人员：{devMember} &nbsp;&nbsp;</p>
-            <p class="MsoNormal">测试人员：{qaMember}</p>
-            <p class="MsoNormal">产品经理：{PMMember}</p>
-        </td>
-    </tr>
-    <tr>
-        <td>发布人</td>
-        <td class>{releaser}</td>
-    </tr>
-    </tbody>
-</table>
-</body>
-</html>
+<h1 style="text-align:left;"><span>一、版本信息</span></h1>
+<p style="text-align:left;"><span>版本号：</span><span style="color:#E53333;font-size:16px;">{releaseBuild}</span> </p>
+<p style="text-align:left;"><span>适用范围：{applyScope}</span></p>
+<p style="text-align:left;"><span>发布内容：{releaseContent}</span></p>
+<h1 style="text-align:left;"><span>二、发布说明</span></h1>
+<h2 style="text-align:left;"><span><span style="font-size:14px;"><span style="font-size:16px;">1版本获取</span></span></span></h2>
+<p style="text-align:left;"><span><span style="font-size:14px;">1、访问链接</span><a
+        href="http://eword.66ip.net:2020/index.html" target="_blank"><span style="color:#000000;font-size:14px;">http://eword.66ip.net:2020/index.html</span></a><span
+        style="font-size:14px;">，登录（</span><span>账号：</span><span><span style="color:#006600;"><strong><span
+        style="font-size:14px;">ime</span></strong></span></span><span>&nbsp;</span><span>&nbsp;密码：</span><span><span
+        style="color:#006600;font-size:14px;"><strong>TomTaw@20240104</strong></span></span><span
+        style="font-size:14px;">），</span></span></p>
+<p style="text-align:left;"><span style="font-size:14px;">2、程序包下载路径：</span><strong><span style="color: #e53377;font-size:14px;">{releaseLink}>{releaseBuild}</span></strong></p>
+<p style="text-align:left;"><span style="font-size:14px;">3、解压密码：</span><strong><span style="color:#006600;font-size:14px;">{compressPwd}</span></strong></p>
+<h2 style="text-align:left;"><span style="font-size:14px;"><span style="font-size:16px;">2文档阅读</span></span></h2>
+<p class="MsoNormal" style="text-align:left;"><span style="font-size:14px;">ChangeLog：</span><span
+        style="color:#000000;font-size:14px;"><a href={changelogUrl} target="_blank">{changelogUrl}</a></span></p>
+<p class="MsoNormal" style="text-align:left;"><span style="font-size:14px;">更新说明：</span><span
+        style="color:#000000;font-size:14px;"><a href="{updateNote}" target="_blank">{updateNote}</a></span></p>
+<h1 style="text-align:left;"><span>三、注意事项</span></h1>
+<h2 style="color:#3C4353;"><span style="font-size:16px;">1特别说明</span></h2>
+  <p style="color:#660055;">{attention}</p>
+</span></p>
+<h2 style="text-align:left;"><span style="font-size:16px;">2部署说明</span></h2>
+<p style="text-align:left;"><span style="font-size:14px;">部署步骤参照相关文档-部署文档</span></p>
+<h2 style="text-align:left;"><span style="font-size:16px;">3更新说明</span></h2>
+<p style="text-align:left;"><span style="font-size:14px;">更新步骤：参考相关文档-更新步骤</span></p>
+<p style="text-align:left;"><span style="font-size:14px;">更新内容：参考《ChangeLog》和《更新说明》</span></p>
+<p style="color:#53523C;font-size:13px;background-color:#FFFFFF;"><span style="color:#000000;font-size:14px;"></span>
+</p>
+<h2 style="text-align:left;"><span style="font-size:16px;">4相关文档</span>
+</h2>
+<p style="text-align:left;">相关文档中包含该产品的所有相关的文档，如：部署手册、使用手册、更新步骤说明、接口文档等</p>
+<p style="text-align:left;"><span style="font-size:14px;">可以用产品名称进行搜索（Ctrl+F），点击查看，链接如下</span></p>
+<p style="text-align:left;color:#53523C;font-size:13px;background-color:#FFFFFF;"><span style="color:#000000;"><a
+        href="https://www.yuque.com/iwh0hs/kb/ma86nvsokufyx1ya?singleDoc#" target="_blank">https://www.yuque.com/iwh0hs/kb/ma86nvsokufyx1ya?singleDoc# </a>《文档结构目录》 密码：nayx</span>
+</p>
+<h1 style="text-align:left;">四、相关人员</h1>
+<p style="text-align:left;"><span style="font-size:14px;color:#000000;">发布人员：{releaser}</span></p>
+<p style="text-align:left;"><span style="font-size:14px;color:#000000;">研发人员：{devMember} &nbsp;&nbsp;</span></p>
+<p style="text-align:left;"><span style="font-size:14px;color:#000000;">测试人员：{qaMember}</span></p>
+<p style="text-align:left;"><span style="font-size:14px;color:#000000;">产品经理：{PMMember}</span></p>
