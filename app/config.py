@@ -35,7 +35,8 @@ AUTO_TEST_REPORT = {
 # 自动发布
 AUTO_DISTRIBUTE = {
 	'TEMPLATE': 'releaseDesc.html',
-	'COMPRESS_PATH': r'\\192.168.1.19\distribution'  # 程序发布路径
+	'COMPRESS_PATH': r'\\192.168.1.19\distribution',  # 程序发布路径
+	'FONT_PATH':'simsun.ttc' # 生成pdf审核确认单用到
 
 }
 """CD相关配置"""

@@ -20,7 +20,10 @@ log_time = time.strftime('%Y%m%d')
 # 模块日志配置
 class Logging:
 	__instance = None
-	logger.add(f"{log_path}/api_{log_time}.log", rotation="0:00", encoding="utf-8", enqueue=True, retention="1 week")
+	log_file = f"api_{log_time}.log"
+	# logger.add(f"{log_path}/{log_file}", rotation="0:00", encoding="utf-8", enqueue=True, retention="1 week")
+	# 防止跨平台时的拼接错误，使用Path
+	logger.add(f"{Path(log_path,log_file)}", rotation="0:00", encoding="utf-8", enqueue=True, retention="1 week")
 
 	# 参数定义参考 loguru官网 http://loguru.readthedocs.io/
 	# https://cloud.tencent.com/developer/article/1849382?from=article.detail.1640693

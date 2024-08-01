@@ -4,6 +4,9 @@
 @Author: 九层风（YePing Zhang）
 @Contact : yeahcheung213@163.com
 """
+import os
+from pathlib import Path
+
 # 用于生成pdf报告
 
 from reportlab.lib.units import cm, inch  # 单位
@@ -15,10 +18,13 @@ from reportlab.platypus.flowables import Image  # 图片
 
 from reportlab.lib.pagesizes import A4  # 页面尺寸
 from reportlab.lib import colors  # 颜色模块
+from app.config import ROOT_DIRECTORY, AUTO_DISTRIBUTE
 
+font_path = os.path.join(ROOT_DIRECTORY, 'static', AUTO_DISTRIBUTE['FONT_PATH'])
+sign_image = os.path.join(ROOT_DIRECTORY, 'utils', 'sign_img')
 
 # 注册字体
-pdfmetrics.registerFont(TTFont('SimSun', r'C:\Windows\Fonts\simsun.ttc'))
+pdfmetrics.registerFont(TTFont('SimSun', font_path))
 
 class Graph:
 
@@ -41,7 +47,9 @@ class Graph:
     # 生成手写签名的图片
     @staticmethod
     def signature_image(name: str):
-        image = Image(r'.\sign_img\{0}.gif'.format(name))
+        gif_file = f'{name}.gif'
+        # image = Image(r'.\sign_img\{0}.gif'.format(name))
+        image = Image(Path(sign_image,gif_file))
         # image.drawHeight = 2 * cm * Img.drawHeight / Img.drawWidth
         image.drawHeight = 1 * inch * image.drawHeight / image.drawWidth
         # image.drawWidth = 4 * cm

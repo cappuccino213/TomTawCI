@@ -27,6 +27,9 @@ from app.config import RUN_CONFIGURE
 from app.utils.log_handle import *
 from app.config import LOG_CONFIG
 from pathlib import Path
+
+from multiprocessing import freeze_support
+
 import uvicorn
 import sys
 import os
@@ -90,6 +93,7 @@ async def root():
 if __name__ == "__main__":
     root_path = Path(__file__).parent  # 获取当前文件的父路径
     os.chdir(root_path)  # 切换程序运行目录
+    freeze_support()
     # 脚本启动
     uvicorn.run(app='main:app', host="0.0.0.0", port=RUN_CONFIGURE['PORT'], reload=RUN_CONFIGURE['RELOAD'],
                 debug=RUN_CONFIGURE['DEBUG'], workers=RUN_CONFIGURE['WORKERS'])
