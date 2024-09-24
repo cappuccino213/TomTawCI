@@ -133,13 +133,13 @@ def email_notice_rule(notice_type: str, business_id: int, server_account: str, s
 
 @router.post("/mail", name="邮件通知")
 async def email(param: tools_schemas.EmailNotice):
-    try:
-        email_info = email_notice_rule(param.notice_type, param.business_id, param.server_account,
-                                       param.server_password, param.email_to, param.if_review)
-        z_mail(email_info['mail_struct'], email_info['mail_server'], email_info['mail_to'], email_info['mail_cc'])
-        return resp_200(dict(), message="邮件通知成功")
-    except Exception as e:
-        return resp_400(message="邮件通知失败，原因：{}".format(str(e)))
+    email_info = email_notice_rule(param.notice_type, param.business_id, param.server_account,
+                                   param.server_password, param.email_to, param.if_review)
+    res = z_mail(email_info['mail_struct'], email_info['mail_server'], email_info['mail_to'], email_info['mail_cc'])
+    if res:
+        return resp_200(data={},message=res)
+    return resp_500(message="邮件通知失败")
+
 
 
 if __name__ == "__main__":
