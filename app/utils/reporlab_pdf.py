@@ -64,7 +64,7 @@ class Graph:
         # 设置行高
         # line_height = 30
 
-        # 设置表格样式
+        # 设置表格样式,必须与内容数量对应上
         style = [
             # 字体设置
             ('FONTNAME', (0, 0), (-1, -1), 'SimSun'),  # 字体
@@ -94,24 +94,75 @@ class Graph:
             ('GRID', (0, 0), (-1, -1), 0.5, colors.black),  # 边框颜色
             ('INNERGRID', (0, 3), (0, 3), 0.5, colors.transparent),  # 边框颜色
 
-            # 表格合并
+            # 表格合并-原表格合并备份
+            # ('SPAN', (0, 3), (-1, 3)),  # 合并列
+            # ('SPAN', (0, 4), (-1, 4)),
+            # ('SPAN', (0, 5), (-1, 5)),
+            # ('SPAN', (0, 6), (-1, 6)),
+            # ('SPAN', (0, 7), (-1, 7)),
+            # ('SPAN', (0, 8), (-1, 8)),
+            # ('SPAN', (0, 9), (-1, 9)),
+            # ('SPAN', (1, 10), (-1, 10)),
+            # ('SPAN', (0, 11), (-1, 11)),
+            # ('SPAN', (1, 12), (-1, 12))
+
+            # 增加了changelog后的表格合并
             ('SPAN', (0, 3), (-1, 3)),  # 合并列
-            ('SPAN', (0, 4), (-1, 4)),
+            ('SPAN', (0, 4), (-1, 4)), # 第4行
             ('SPAN', (0, 5), (-1, 5)),
             ('SPAN', (0, 6), (-1, 6)),
             ('SPAN', (0, 7), (-1, 7)),
             ('SPAN', (0, 8), (-1, 8)),
             ('SPAN', (0, 9), (-1, 9)),
-            ('SPAN', (1, 10), (-1, 10)),
-            ('SPAN', (0, 11), (-1, 11)),
-            ('SPAN', (1, 12), (-1, 12))
+            ('SPAN', (0, 10), (-1, 10)), # 第11行
+            ('SPAN', (0, 11), (-1, 11)),  # 第12行
+            ('SPAN', (1, 12), (-1, 12)), # 第13行，从第二列开始
+            ('SPAN', (0, 13), (-1, 13)), # 第14行
+            ('SPAN', (1, 14), (-1, 14)) # 第15行，从第二列开始
+
         ]
         # table = Table(args, colWidths=col_width, rowHeights=None, style=style)
         table = Table(args, colWidths=[3 * cm, 5.5 * cm, 3 * cm, 5.5 * cm], rowHeights=None, style=style)
         return table
 
 
+# 生成发布审核单pdf 代码备份
+# def generate_release_approval_form(**kwargs):
+#     # 表格内容
+#     content = list()
+#
+#     # 填写标题
+#     content.append(Graph.draw_title('软件产品发布审批表'))
+#
+#     # 定义表格数据
+#     table_data = [
+#         ('产品名称', kwargs['product_name'], '试产数量', '1'),
+#         ('规格型号', kwargs['product_code'], '起始日期', kwargs['project_begin']),
+#         ('版本号', kwargs['build_name'], '总结日期', kwargs['project_end']),
+#         ('一、试产前期工作：', '', '', ''),
+#         (
+#             '  在各项检测、检验以及其他操作人员均接受过相应主管部门的培训，并经考核合格后上岗。\n公司测试人员（张烨平、张林）、场地等准备工作到位后，于{0}起动该项目。'.format(
+#                 kwargs['project_begin'].split('月')[0]+'月'),
+#             '', '', ''),
+#         ('二、产品检验、试验结果简介及其结论', '', '', ''),
+#         ('  各阶段按要求均通过检测。', '', '', ''),
+#         ('三、试产结论及建议', '', '', ''),
+#         ('  通过各项功能均通过检测。', '', '', ''),
+#         ('四、审核意见', '', '', ''),
+#         ('通过', [Graph.signature_image(kwargs['qa_name']), Graph.signature_image(kwargs['pm_name'])], ''),
+#         ('五、主管领导批示', '', '', ''),
+#         ('通过', Graph.signature_image('黄燕平'),)
+#     ]
+#     content.append(Graph.draw_table(*table_data))
+#
+#     # 生成pdf文件
+#     pdf = SimpleDocTemplate(kwargs['approval_form_path'], pagesize=A4)
+#     pdf.build(content)
+#     print(f"生成审批单成功，路径：{kwargs['approval_form_path']}")
+
+
 # 生成发布审核单pdf
+# 增加版本变更记录 2025年3月13日 14:09:01
 def generate_release_approval_form(**kwargs):
     # 表格内容
     content = list()
@@ -131,11 +182,13 @@ def generate_release_approval_form(**kwargs):
             '', '', ''),
         ('二、产品检验、试验结果简介及其结论', '', '', ''),
         ('  各阶段按要求均通过检测。', '', '', ''),
-        ('三、试产结论及建议', '', '', ''),
-        ('  通过各项功能均通过检测。', '', '', ''),
-        ('四、审核意见', '', '', ''),
+        ('三、版本变更记录', '', '', ''),
+        (kwargs['version_desc'],'', '', ''),
+        ('四、试产结论及建议', '', '', ''),
+        ('  各项功能均通过检测。', '', '', ''),
+        ('五、审核意见', '', '', ''),
         ('通过', [Graph.signature_image(kwargs['qa_name']), Graph.signature_image(kwargs['pm_name'])], ''),
-        ('五、主管领导批示', '', '', ''),
+        ('六、主管领导批示', '', '', ''),
         ('通过', Graph.signature_image('黄燕平'),)
     ]
     content.append(Graph.draw_table(*table_data))

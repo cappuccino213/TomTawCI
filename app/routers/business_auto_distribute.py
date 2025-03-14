@@ -4,7 +4,7 @@
 @Author: 九层风（YePing Zhang）
 @Contact : yeahcheung213@163.com
 """
-import datetime
+# import datetime
 
 from fastapi import APIRouter
 from app.schemas import release_schemas
@@ -12,11 +12,12 @@ from app.config import ROOT_DIRECTORY
 from app.utils import html2string, response_code, reporlab_pdf,file_handle
 from datetime import date
 from app.models.release_model import ReleaseModel
-from app.models.build_model import query_build_multiple_condition
+from app.models.build_model import query_build_multiple_condition,get_build_info
 from app.models.action_model import *
 from app.db.database import *
 from app.config import AUTO_DISTRIBUTE
 import os
+
 
 RELEASE_TEMPLATE_PATH = os.path.join(ROOT_DIRECTORY, 'static', AUTO_DISTRIBUTE['TEMPLATE'])
 
@@ -97,6 +98,11 @@ async def auto_distribute(release_info: release_schemas.CreateRelease):
     approval_form_dir = os.path.join(os.path.split(dst_file_path)[0],'ApprovalForm')
     file_handle.make_dir(approval_form_dir)
 
+    # 在发布单中新增版本描述
+    build_desc = get_build_info(release_info.build)['desc']
+    # 处理html格式
+    change_log = html2string.convert_html_to_text(build_desc)
+
     approval_form_dict = dict(product_name=release_info.product_name,
                               product_code=release_info.product_code,
                               build_name=release_info.build_name,
@@ -104,8 +110,10 @@ async def auto_distribute(release_info: release_schemas.CreateRelease):
                               project_end=today_date.strftime("%Y年%m月%d日"),
                               approval_form_path=os.path.join(approval_form_dir,f"{release_dict['name']}发布审批单.pdf"),
                               qa_name = release_info.releaser, # 测试人员
-                              pm_name = release_data[1] # 开发人员
+                              pm_name = release_data[1], # 开发人员
+                              version_desc = change_log
                               )
+    # 生成pdf
     reporlab_pdf.generate_release_approval_form(**approval_form_dict)
 
     if db_release.id:  # 根据有没有生成新的id判断是否插入成功

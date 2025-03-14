@@ -84,7 +84,18 @@ def query_build_multiple_condition(condition: dict):
 def get_latest_max_id():
 	return Session.query(BuildModel).order_by(desc(BuildModel.id)).first().to_dict()['id']
 
+# 根据版本id获取版本信息
+def get_build_info(build_id: int):
+	try:
+		return Session.query(BuildModel).filter(BuildModel.id == build_id).first().to_dict()
+	except Exception as e:
+		logging.error(str(e))
+	finally:
+		Session.close()
+
 
 if __name__ == "__main__":
-	l = query_build_multiple_condition({'product': 7, 'project': 66, 'name': 'v1.1.1.1261'})[0].id
-	print(l)
+	# l = query_build_multiple_condition({'product': 7, 'project': 66, 'name': 'v1.1.1.1261'})[0].id
+	# print(l)
+
+	print(get_build_info(1000)['desc'])
